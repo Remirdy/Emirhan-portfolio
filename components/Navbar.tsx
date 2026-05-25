@@ -1,1 +1,1 @@
-the full navbar content here
+CLEAN NAVBAR

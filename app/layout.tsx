@@ -1,1 +1,1 @@
-the layout content
+CLEAN LAYOUT
