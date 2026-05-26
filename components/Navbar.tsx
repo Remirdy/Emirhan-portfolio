@@ -1,119 +1,62 @@
 'use client'
 
 import { useState } from 'react'
-import { Menu, X, Github } from 'lucide-react'
+import { Github, Menu, X } from 'lucide-react'
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false)
 
-  const navLinks = [
-    { href: '#about', label: 'About' },
-    { href: '#projects', label: 'Projects' },
-    { href: '#contact', label: 'Contact' },
+  const links = [
+    { href: '#about', label: 'Profile' },
+    { href: '#projects', label: 'Dirty Birdy!' },
+    { href: '#contact', label: 'Projects' },
   ]
 
-  const scrollToSection = (href: string) => {
+  const scrollTo = (href: string) => {
     const element = document.querySelector(href)
-    if (element) {
-      const offset = 80
-      const bodyRect = document.body.getBoundingClientRect().top
-      const elementPosition = element.getBoundingClientRect().top
-      const offsetPosition = elementPosition - bodyRect - offset
-
-      window.scrollTo({
-        top: offsetPosition,
-        behavior: 'smooth'
-      })
-    }
+    if (element) element.scrollIntoView({ behavior: 'smooth', block: 'start' })
     setIsOpen(false)
   }
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-[#050505]/95 backdrop-blur-xl border-b border-white/10">
-      <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
-        {/* Logo */}
-        <a href="#" className="flex items-center gap-3 group">
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#00eaff] to-[#00b8cc] flex items-center justify-center">
-            <span className="text-[#050505] font-bold text-xl tracking-tighter">ED</span>
-          </div>
-          <div>
-            <div className="font-semibold text-lg tracking-tight">Emirhan Doygun</div>
-            <div className="text-[10px] text-white/50 -mt-1">PORTFOLIO</div>
-          </div>
-        </a>
+    <nav className="fixed left-1/2 top-4 z-50 w-[min(1120px,calc(100%-24px))] -translate-x-1/2 rounded-2xl border border-cyan-300/15 bg-[#02070d]/70 px-4 py-3 text-white shadow-2xl shadow-black/30 backdrop-blur-2xl">
+      <div className="flex items-center justify-between gap-4">
+        <button onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} className="group flex items-center gap-3 text-left">
+          <span className="grid h-9 w-9 place-items-center rounded-xl border border-cyan-300/25 bg-cyan-300/10 text-sm font-black text-cyan-200">ED</span>
+          <span>
+            <span className="block text-sm font-bold tracking-tight">Emirhan Doygun</span>
+            <span className="block text-[10px] font-bold tracking-[0.35em] text-cyan-200/70">PORTFOLIO</span>
+          </span>
+        </button>
 
-        {/* Desktop Navigation */}
-        <div className="hidden md:flex items-center gap-10 text-sm font-medium">
-          {navLinks.map((link) => (
-            <button
-              key={link.href}
-              onClick={() => scrollToSection(link.href)}
-              className="text-white/70 hover:text-white transition-colors relative group"
-            >
+        <div className="hidden items-center gap-8 md:flex">
+          {links.map((link) => (
+            <button key={link.href} onClick={() => scrollTo(link.href)} className="text-xs font-bold uppercase tracking-[0.28em] text-white/65 transition hover:text-cyan-200">
               {link.label}
-              <span className="absolute -bottom-1 left-0 w-0 h-px bg-[#00eaff] transition-all group-hover:w-full" />
             </button>
           ))}
         </div>
 
-        {/* Right side actions */}
-        <div className="hidden md:flex items-center gap-4">
-          <a 
-            href="https://github.com/Remirdy" 
-            target="_blank" 
-            rel="noopener noreferrer"
-            className="flex items-center gap-2 px-4 py-2 text-sm rounded-full border border-white/20 hover:bg-white/5 transition-all hover:border-white/40"
-          >
-            <Github className="w-4 h-4" />
-            <span>GitHub</span>
-          </a>
-          <a 
-            href="#contact"
-            onClick={(e) => { e.preventDefault(); scrollToSection('#contact') }}
-            className="px-6 py-2.5 text-sm font-semibold rounded-full bg-white text-[#050505] hover:bg-[#00eaff] hover:text-[#050505] transition-all active:scale-[0.985]"
-          >
-            Let's Talk
-          </a>
-        </div>
+        <a href="https://github.com/Remirdy" target="_blank" rel="noreferrer" className="hidden items-center gap-2 rounded-xl border border-cyan-300/20 px-4 py-2 text-xs font-bold text-white/75 transition hover:border-cyan-200/60 hover:text-cyan-200 md:flex">
+          <Github className="h-4 w-4" />
+          GitHub
+        </a>
 
-        {/* Mobile Menu Button */}
-        <button 
-          onClick={() => setIsOpen(!isOpen)} 
-          className="md:hidden p-2 text-white/70 hover:text-white"
-          aria-label="Toggle menu"
-        >
-          {isOpen ? <X size={22} /> : <Menu size={22} />}
+        <button onClick={() => setIsOpen(!isOpen)} className="md:hidden" aria-label="Toggle menu">
+          {isOpen ? <X /> : <Menu />}
         </button>
       </div>
 
-      {/* Mobile Menu */}
       {isOpen && (
-        <div className="md:hidden border-t border-white/10 bg-[#050505] px-6 py-6 flex flex-col gap-4 text-sm">
-          {navLinks.map((link) => (
-            <button
-              key={link.href}
-              onClick={() => scrollToSection(link.href)}
-              className="text-left py-2 text-white/80 hover:text-white"
-            >
+        <div className="mt-4 grid gap-2 border-t border-cyan-300/10 pt-4 md:hidden">
+          {links.map((link) => (
+            <button key={link.href} onClick={() => scrollTo(link.href)} className="rounded-xl px-3 py-3 text-left text-sm font-bold text-white/75 hover:bg-cyan-300/10">
               {link.label}
             </button>
           ))}
-          <div className="pt-4 border-t border-white/10 flex flex-col gap-3">
-            <a 
-              href="https://github.com/Remirdy" 
-              target="_blank" 
-              className="flex items-center gap-2 py-2 text-white/80"
-            >
-              <Github className="w-4 h-4" /> GitHub
-            </a>
-            <a 
-              href="#contact"
-              onClick={(e) => { e.preventDefault(); scrollToSection('#contact') }}
-              className="w-full text-center py-3 rounded-full bg-white text-[#050505] font-semibold"
-            >
-              Let's Talk
-            </a>
-          </div>
+          <a href="https://github.com/Remirdy" target="_blank" rel="noreferrer" className="rounded-xl px-3 py-3 text-sm font-bold text-cyan-200 hover:bg-cyan-300/10">
+            GitHub
+          </a>
         </div>
       )}
     </nav>
