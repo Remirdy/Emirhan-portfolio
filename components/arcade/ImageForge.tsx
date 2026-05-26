@@ -1,16 +1,16 @@
 'use client'
 
 import { useRef, useState } from 'react'
-import { Download, Image as ImageIcon, Layers3, Shuffle, Wand2 } from 'lucide-react'
-import s from './Arcade.module.css'
+import { Download, Image as ImageIcon, Layers3, Shuffle } from 'lucide-react'
+import s from './ImageForge.module.css'
 
-type Preset = { name: string; w: number; h: number }
+type Preset = { name: string; w: number; h: number; note: string }
 
 const presets: Preset[] = [
-  { name: 'Instagram Post', w: 1080, h: 1080 },
-  { name: 'Story / Reels', w: 1080, h: 1920 },
-  { name: 'YouTube Thumb', w: 1280, h: 720 },
-  { name: 'App Store Shot', w: 1290, h: 2796 },
+  { name: 'Square', w: 1080, h: 1080, note: 'Instagram post' },
+  { name: 'Vertical', w: 1080, h: 1920, note: 'Story / Reels' },
+  { name: 'Wide', w: 1280, h: 720, note: 'YouTube thumb' },
+  { name: 'Store', w: 1290, h: 2796, note: 'App screenshot' },
 ]
 
 export default function ImageForge() {
@@ -22,12 +22,11 @@ export default function ImageForge() {
 
   const draw = (img: HTMLImageElement, p = preset, fit = mode) => {
     const canvas = canvasRef.current
-    if (!canvas) return
-    const ctx = canvas.getContext('2d')
-    if (!ctx) return
+    const ctx = canvas?.getContext('2d')
+    if (!canvas || !ctx) return
     canvas.width = p.w
     canvas.height = p.h
-    ctx.fillStyle = '#050912'
+    ctx.fillStyle = '#071019'
     ctx.fillRect(0, 0, p.w, p.h)
     const scale = fit === 'cover' ? Math.max(p.w / img.width, p.h / img.height) : Math.min(p.w / img.width, p.h / img.height)
     const dw = img.width * scale
@@ -48,7 +47,7 @@ export default function ImageForge() {
     img.src = url
   }
 
-  const applyPreset = (p: Preset) => {
+  const choosePreset = (p: Preset) => {
     setPreset(p)
     if (image) draw(image, p, mode)
   }
@@ -68,18 +67,19 @@ export default function ImageForge() {
   }
 
   return (
-    <div className={s.imageForgeApp}>
-      <div className={s.forgeDrop} onDragOver={(e) => e.preventDefault()} onDrop={(e) => { e.preventDefault(); onFile(e.dataTransfer.files[0]) }}>
-        {preview ? <img src={preview} alt="ImageForge preview" /> : <><ImageIcon /><b>Drop an image</b><span>or choose a file to forge presets</span></>}
+    <div className={s.shell}>
+      <div className={s.preview} onDragOver={(e) => e.preventDefault()} onDrop={(e) => { e.preventDefault(); onFile(e.dataTransfer.files[0]) }}>
+        {preview ? <img src={preview} alt="ImageForge preview" /> : <div className={s.empty}><ImageIcon /><strong>Drop image here</strong><span>Resize, crop and export in one clean panel.</span></div>}
         <input type="file" accept="image/*" onChange={(e) => onFile(e.target.files?.[0])} />
       </div>
-      <div className={s.forgeControls}>
-        <div className={s.forgeBrand}><Layers3 /><div><b>ImageForge</b><span>working browser-based export lab</span></div></div>
-        {presets.map((p) => <button key={p.name} onClick={() => applyPreset(p)} className={preset.name === p.name ? s.activePreset : ''}>{p.name}<small>{p.w}×{p.h}</small></button>)}
-        <button onClick={toggleMode}><Shuffle /> Fit mode: {mode}</button>
-        <button onClick={download} disabled={!preview}><Download /> Download PNG</button>
-        <div className={s.forgeNote}><Wand2 /> Drag-drop, resize, crop-fit and export now works directly inside the portfolio.</div>
-      </div>
+
+      <aside className={s.controls}>
+        <div className={s.brand}><Layers3 /><div><b>ImageForge</b><span>Working browser export tool</span></div></div>
+        <div className={s.status}><span>Output</span><b>{preset.w} × {preset.h}</b></div>
+        <div className={s.presets}>{presets.map((p) => <button key={p.name} onClick={() => choosePreset(p)} className={preset.name === p.name ? s.active : ''}><b>{p.name}</b><span>{p.note}</span></button>)}</div>
+        <button className={s.secondary} onClick={toggleMode}><Shuffle /> Fit mode: {mode}</button>
+        <button className={s.primary} onClick={download} disabled={!preview}><Download /> Download PNG</button>
+      </aside>
       <canvas ref={canvasRef} hidden />
     </div>
   )
