@@ -1,11 +1,10 @@
 'use client'
 
-import type { ReactNode } from 'react'
 import { motion } from 'framer-motion'
+import type { Variants } from 'framer-motion'
 import {
   Aperture,
   ArrowRight,
-  ArrowUpRight,
   BookOpen,
   Brain,
   Clapperboard,
@@ -22,530 +21,218 @@ import {
   Megaphone,
   Monitor,
   Repeat2,
+  Rocket,
+  ShieldCheck,
   Smartphone,
   Sparkles,
-  Wrench,
+  Terminal,
+  Wand2,
   Zap,
 } from 'lucide-react'
 
-type Skill = {
-  icon: ReactNode
-  title: string
+const rise: Variants = {
+  hidden: { opacity: 0, y: 34 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.65, ease: 'easeOut' } },
 }
 
-type Experience = {
-  icon: ReactNode
-  title: string
-  body: string
+const card: Variants = {
+  hidden: { opacity: 0, y: 28, scale: 0.97 },
+  visible: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.55, ease: 'easeOut' } },
 }
 
-type Project = {
-  index: string
-  title: string
-  body: string
-  icon: ReactNode
-  visual: 'imageforge' | 'ui' | 'motion' | 'book'
+const group: Variants = {
+  hidden: {},
+  visible: { transition: { staggerChildren: 0.07, delayChildren: 0.08 } },
 }
 
-const panelMotion = {
-  hidden: { opacity: 0, y: 44 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.7, ease: [0.23, 1, 0.32, 1] },
-  },
-}
-
-const stagger = {
-  visible: {
-    transition: {
-      staggerChildren: 0.07,
-    },
-  },
-}
-
-const itemMotion = {
-  hidden: { opacity: 0, y: 18 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.48, ease: [0.23, 1, 0.32, 1] },
-  },
-}
-
-const coreStrengths: Skill[] = [
-  { icon: <Gamepad2 />, title: 'Unity Development' },
-  { icon: <Code2 />, title: 'C# Programming' },
-  { icon: <Monitor />, title: 'Game UI / HUD Design' },
-  { icon: <Aperture />, title: 'Motion Graphics' },
-  { icon: <Sparkles />, title: 'AI Prompt Design' },
-  { icon: <Lightbulb />, title: 'Creative Problem Solving' },
+const stackCards = [
+  { label: 'Unity Runtime', value: 'C# + UI + VFX', icon: Gamepad2 },
+  { label: 'Creative Engine', value: 'AI Prompt Systems', icon: Sparkles },
+  { label: 'Motion Layer', value: 'After Effects Flow', icon: Clapperboard },
 ]
 
-const tools: Skill[] = [
-  { icon: <Gamepad2 />, title: 'Unity' },
-  { icon: <Code2 />, title: 'C#' },
-  { icon: <Repeat2 />, title: 'Git' },
-  { icon: <Github />, title: 'GitHub' },
-  { icon: <Layers3 />, title: 'Photoshop' },
-  { icon: <Clapperboard />, title: 'After Effects' },
-  { icon: <Zap />, title: 'CapCut' },
-  { icon: <Cpu />, title: 'React' },
-  { icon: <Wrench />, title: 'Tailwind' },
-  { icon: <Sparkles />, title: 'Prompt Engineering' },
+const skills = [
+  ['Unity Development', Gamepad2],
+  ['C# Programming', Code2],
+  ['Game UI and HUD', Monitor],
+  ['Motion Graphics', Aperture],
+  ['AI Prompt Design', Wand2],
+  ['Creative Problem Solving', Lightbulb],
 ]
 
-const experiences: Experience[] = [
-  {
-    icon: <Gamepad2 />,
-    title: 'Zargas Labs — Game & AI Creative Development',
-    body: 'Contributed to game concepts, visual direction, interface ideas, and AI-assisted creative production workflows.',
-  },
-  {
-    icon: <Megaphone />,
-    title: 'Zargas Labs — Digital Marketing & Prompt Design',
-    body: 'Created visual concepts, ad scripts, and AI prompt systems for digital campaigns and social content.',
-  },
-  {
-    icon: <Clapperboard />,
-    title: 'Metraj Production — Motion Graphics',
-    body: 'Worked on motion-driven visuals, After Effects production, and creative video design.',
-  },
+const workflow = [
+  ['Research', 'Understand the product, audience and visual direction.'],
+  ['Prototype', 'Build fast layout, UI, motion and interaction tests.'],
+  ['Polish', 'Add glow, timing, micro animation and responsive structure.'],
+  ['Ship', 'Package, deploy, iterate and improve from feedback.'],
 ]
 
-const projects: Project[] = [
+const projects = [
   {
-    index: '1.',
+    title: 'Dirty Birdy!',
+    tag: 'Featured Mobile Game',
+    text: 'A chaotic arcade experience shaped with cartoon identity, playful UI, animated feedback, combo energy and promotional visual direction.',
+    icon: Gamepad2,
+  },
+  {
     title: 'ImageForge',
-    body: 'A creator-focused image resizing and export tool concept featuring crop controls, batch export, and preset-based workflows.',
-    icon: <Sparkles />,
-    visual: 'imageforge',
+    tag: 'Creator Tool',
+    text: 'A resize and export workflow concept with crop states, preset cards, batch export logic and creator focused interaction patterns.',
+    icon: Layers3,
   },
   {
-    index: '2.',
-    title: 'Unity UI & VFX Systems',
-    body: 'A collection of animated health bars, HUD elements, effects, and interactive UI concepts designed for more expressive game feel.',
-    icon: <Gamepad2 />,
-    visual: 'ui',
-  },
-  {
-    index: '3.',
     title: 'AI Motion Ads',
-    body: 'Cinematic ad concepts and prompt-driven visual storytelling for social media campaigns, product promotions, and short-form content.',
-    icon: <Brain />,
-    visual: 'motion',
+    tag: 'Creative Production',
+    text: 'Cinematic social media concepts supported by prompt systems, camera language, pacing, visual transitions and brand-safe execution.',
+    icon: Brain,
   },
   {
-    index: '4.',
     title: 'Calculus Book Design',
-    body: 'A long-form academic content project focused on structure, visual organization, consistency, and polished presentation.',
-    icon: <BookOpen />,
-    visual: 'book',
+    tag: 'Editorial System',
+    text: 'A structured long-form academic project focused on hierarchy, visual rhythm, example formatting and consistent presentation language.',
+    icon: BookOpen,
   },
 ]
 
-const bringItems: { label: string; icon: ReactNode }[] = [
-  { label: 'Game-focused thinking', icon: <Gamepad2 /> },
-  { label: 'Clean visual communication', icon: <Monitor /> },
-  { label: 'Strong creative iteration', icon: <Repeat2 /> },
-  { label: 'AI-assisted production', icon: <Brain /> },
-  { label: 'Cross-disciplinary workflow', icon: <Database /> },
-]
-
-function Panel({
-  children,
-  eyebrow,
-  page,
-  id,
-  className = '',
-}: {
-  children: ReactNode
-  eyebrow?: string
-  page: string
-  id?: string
-  className?: string
-}) {
+function Panel({ id, eyebrow, children, className = '' }: { id?: string; eyebrow: string; children: React.ReactNode; className?: string }) {
   return (
     <motion.section
       id={id}
-      variants={panelMotion}
+      variants={rise}
       initial="hidden"
       whileInView="visible"
       viewport={{ once: true, margin: '-120px' }}
-      className={`pdf-panel ${className}`}
+      className={`pdf-panel relative mb-8 rounded-[28px] p-6 sm:p-9 lg:p-12 ${className}`}
     >
-      <div className="panel-corner panel-corner-tl" />
-      <div className="panel-corner panel-corner-br" />
-      {eyebrow && <div className="panel-eyebrow">{eyebrow}</div>}
-      <div className="panel-number">{page}</div>
-      <div className="scanline" />
-      {children}
+      <span className="corner-tl" />
+      <span className="corner-br" />
+      <div className="relative z-10 mb-7 flex items-center gap-4 text-[11px] font-black uppercase tracking-[0.42em] text-cyan-200/80">
+        <span className="h-px w-10 bg-cyan-300/50" />{eyebrow}
+      </div>
+      <div className="relative z-10">{children}</div>
     </motion.section>
   )
 }
 
-function TechIllustration() {
+function HeroVisual() {
   return (
-    <div className="tech-illustration" aria-hidden="true">
-      <div className="orbit-ring" />
-      <div className="orbit-ring orbit-ring-small" />
-      <div className="blue-streak blue-streak-one" />
-      <div className="blue-streak blue-streak-two" />
-      <div className="cube-stack cube-stack-one">
-        <span>U</span>
-      </div>
-      <div className="cube-stack cube-stack-two">
-        <span>C#</span>
-      </div>
-      <div className="hud-card hud-card-one">
-        <i />
-        <b />
-        <em />
-      </div>
-      <div className="hud-card hud-card-two">
-        <i />
-        <b />
-        <em />
-      </div>
-      <div className="particle-field" />
-    </div>
-  )
-}
+    <motion.div variants={group} initial="hidden" animate="visible" className="relative min-h-[560px] overflow-hidden rounded-[34px] border border-cyan-200/20 bg-black/25 p-5 neon-border">
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_68%_26%,rgba(0,234,255,.25),transparent_190px),radial-gradient(circle_at_28%_72%,rgba(124,60,255,.18),transparent_220px)]" />
+      <motion.div variants={card} className="absolute right-8 top-8 h-52 w-52 rounded-full border-4 border-cyan-300/40 neon-glow" />
+      <motion.div variants={card} className="absolute right-20 top-20 h-32 w-32 rounded-full border border-cyan-300/30" />
+      <div className="absolute left-[-80px] top-56 h-1 w-[620px] -rotate-[23deg] rounded-full bg-gradient-to-r from-transparent via-cyan-300 to-transparent shadow-[0_0_22px_#00eaff]" />
+      <div className="absolute right-[-130px] top-72 h-1 w-[720px] -rotate-[23deg] rounded-full bg-gradient-to-r from-transparent via-cyan-200/70 to-transparent shadow-[0_0_18px_#00eaff]" />
 
-function SkillBox({ skill }: { skill: Skill }) {
-  return (
-    <motion.div variants={itemMotion} className="skill-box">
-      <span>{skill.icon}</span>
-      <strong>{skill.title}</strong>
+      <motion.div variants={card} className="absolute left-8 top-20 w-56 rounded-2xl border border-cyan-200/20 bg-slate-950/70 p-5 backdrop-blur-xl">
+        <div className="mb-4 flex items-center gap-3 text-cyan-200"><Terminal /><span className="text-xs font-black tracking-[0.28em]">LIVE STACK</span></div>
+        <div className="space-y-3">
+          {stackCards.map((item) => {
+            const Icon = item.icon
+            return <div key={item.label} className="rounded-xl border border-white/10 bg-white/[.03] p-3"><div className="flex items-center gap-2 text-sm font-black"><Icon className="text-cyan-300" />{item.label}</div><p className="mt-1 text-xs text-white/55">{item.value}</p></div>
+          })}
+        </div>
+      </motion.div>
+
+      <motion.div variants={card} className="absolute bottom-16 left-24 grid h-44 w-36 place-items-center border border-cyan-200/25 bg-slate-900/80 text-5xl font-black clip-tech shadow-2xl">U</motion.div>
+      <motion.div variants={card} className="absolute bottom-8 right-16 grid h-56 w-44 place-items-center border border-cyan-200/25 bg-slate-900/80 text-4xl font-black clip-tech shadow-2xl">C#</motion.div>
+      <motion.div variants={card} className="absolute bottom-36 right-40 w-56 rounded-2xl border border-cyan-200/20 bg-black/35 p-4 backdrop-blur-xl">
+        <div className="mb-3 flex justify-between text-xs font-black text-white/55"><span>Portfolio Signal</span><span className="text-cyan-300">98%</span></div>
+        <div className="h-2 overflow-hidden rounded-full bg-white/10"><div className="h-full w-[98%] rounded-full bg-gradient-to-r from-cyan-300 to-white" /></div>
+        <div className="mt-4 grid grid-cols-3 gap-2 text-center text-[10px] font-black text-white/65"><span>GAME</span><span>AI</span><span>MOTION</span></div>
+      </motion.div>
     </motion.div>
   )
 }
 
-function ExperienceCard({ item }: { item: Experience }) {
+function SkillCell({ name, Icon }: { name: string; Icon: any }) {
   return (
-    <motion.article variants={itemMotion} className="experience-card">
-      <div className="experience-icon">{item.icon}</div>
-      <div>
-        <h4>{item.title}</h4>
-        <p>{item.body}</p>
-      </div>
-    </motion.article>
-  )
-}
-
-function DirtyVisualCard({
-  headline,
-  subline,
-  size = 'small',
-}: {
-  headline: string
-  subline: string
-  size?: 'large' | 'small'
-}) {
-  return (
-    <motion.div variants={itemMotion} className={`dirty-visual-card ${size === 'large' ? 'dirty-visual-large' : ''}`}>
-      <div className="dirty-clouds" />
-      <div className="dirty-phone">
-        <div className="dirty-phone-screen">
-          <span className="bird-dot bird-red" />
-          <span className="bird-dot bird-yellow" />
-          <span className="bird-dot bird-green" />
-        </div>
-      </div>
-      <div className="dirty-copy">
-        <h4>{headline}</h4>
-        <p>{subline}</p>
-      </div>
+    <motion.div variants={card} whileHover={{ y: -5, scale: 1.02 }} className="data-card rounded-2xl p-4">
+      <Icon className="mb-4 h-8 w-8 text-cyan-300" />
+      <h4 className="text-sm font-black leading-tight text-white/90">{name}</h4>
     </motion.div>
   )
 }
 
-function ProjectVisual({ type }: { type: Project['visual'] }) {
-  if (type === 'imageforge') {
-    return (
-      <div className="project-visual visual-imageforge">
-        <div className="crop-frame" />
-        <span>1:1</span>
-        <span>16:9</span>
-        <span>4:5</span>
-        <button>Export All</button>
-      </div>
-    )
-  }
-
-  if (type === 'ui') {
-    return (
-      <div className="project-visual visual-ui">
-        <div className="metric-ring">78%</div>
-        <i />
-        <i />
-        <i />
-        <div className="ui-buttons">
-          <span>+</span>
-          <span>↻</span>
-          <span>✉</span>
+function ProjectCard({ p, i }: { p: any; i: number }) {
+  const Icon = p.icon
+  return (
+    <motion.article variants={card} whileHover={{ y: -10, rotateX: 1.5 }} className="project-card data-card rounded-3xl p-5">
+      <div className="relative mb-5 h-40 overflow-hidden rounded-2xl border border-cyan-200/15 bg-slate-950">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(0,234,255,.24),transparent_110px),linear-gradient(135deg,rgba(255,255,255,.08),transparent)]" />
+        <div className="absolute left-5 top-5 grid h-14 w-14 place-items-center rounded-2xl border border-cyan-200/25 bg-cyan-300/10 text-cyan-300"><Icon /></div>
+        <div className="absolute bottom-5 left-5 right-5">
+          <div className="mb-2 h-2 w-full rounded-full bg-white/10"><div className="h-full rounded-full bg-cyan-300" style={{ width: `${72 + i * 6}%` }} /></div>
+          <div className="flex gap-2"><span className="h-8 flex-1 rounded-lg bg-white/10" /><span className="h-8 w-12 rounded-lg bg-cyan-300/20" /></div>
         </div>
       </div>
-    )
-  }
-
-  if (type === 'motion') {
-    return (
-      <div className="project-visual visual-motion">
-        <div className="play-button">▶</div>
-        <small>00:15</small>
-      </div>
-    )
-  }
-
-  return (
-    <div className="project-visual visual-book">
-      <div className="book-spread">
-        <i />
-        <i />
-      </div>
-    </div>
-  )
-}
-
-function ProjectCard({ project }: { project: Project }) {
-  return (
-    <motion.article variants={itemMotion} whileHover={{ y: -8 }} className="project-tile">
-      <ProjectVisual type={project.visual} />
-      <div className="project-title-row">
-        <span className="project-icon">{project.icon}</span>
-        <h4>
-          {project.index} {project.title}
-        </h4>
-      </div>
-      <p>{project.body}</p>
+      <div className="mb-2 text-[10px] font-black uppercase tracking-[0.3em] text-cyan-300/80">{p.tag}</div>
+      <h3 className="text-2xl font-black tracking-tight">{p.title}</h3>
+      <p className="mt-3 text-sm leading-relaxed text-white/62">{p.text}</p>
     </motion.article>
   )
 }
 
-export default function EmirhanDoygunPortfolio() {
+export default function Home() {
   return (
-    <main className="portfolio-shell">
-      <Panel page="01" eyebrow="SELECTED PORTFOLIO" className="cover-panel">
-        <div className="cover-grid">
-          <div className="cover-copy">
-            <motion.h1 variants={itemMotion}>
-              EMIRHAN
-              <br />
-              DOYGUN
-            </motion.h1>
-
-            <motion.div variants={itemMotion} className="role-line">
-              <span>Game Developer</span>
-              <i />
-              <span>AI Creative Technologist</span>
-              <i />
-              <span>Computer Engineering Student</span>
+    <main className="mx-auto w-[min(1240px,calc(100%-28px))] pb-10 pt-24">
+      <Panel eyebrow="PDF Inspired Interactive Portfolio" className="min-h-[760px]">
+        <div className="grid items-center gap-8 lg:grid-cols-[.92fr_1.08fr]">
+          <div>
+            <motion.div variants={rise} className="mb-5 inline-flex items-center gap-3 rounded-full border border-cyan-200/20 bg-cyan-300/5 px-4 py-2 text-xs font-black uppercase tracking-[0.32em] text-cyan-200"><Rocket className="h-4 w-4" /> Selected Portfolio</motion.div>
+            <motion.h1 variants={rise} className="neon-text text-[clamp(70px,10vw,150px)] font-black uppercase leading-[.82] tracking-[-.08em]">Emirhan<br />Doygun</motion.h1>
+            <motion.p variants={rise} className="mt-7 max-w-xl border-l-4 border-cyan-300/45 pl-5 text-lg leading-relaxed text-white/72">A complex digital portfolio inspired by the PDF visual language: cinematic neon panels, live HUD systems, motion driven case studies, game UI energy and AI-assisted creative production.</motion.p>
+            <motion.div variants={group} initial="hidden" animate="visible" className="mt-8 flex flex-wrap gap-3">
+              {['Game Developer', 'AI Creative Technologist', 'Motion Designer', 'Computer Engineering'].map((x) => <motion.span variants={card} key={x} className="rounded-2xl border border-cyan-200/20 bg-black/30 px-4 py-3 text-sm font-black text-white/75">{x}</motion.span>)}
             </motion.div>
-
-            <motion.p variants={itemMotion} className="cover-intro">
-              I build playful digital experiences through Unity, C#, motion design,
-              AI-assisted visuals, and interactive interface design. My work blends
-              software, animation, and creative technology into polished, user-focused projects.
-            </motion.p>
-
-            <motion.div variants={stagger} className="hero-pills">
-              {['Unity', 'C#', 'Game UI', 'Motion Design', 'Prompt Engineering'].map((label) => (
-                <motion.span variants={itemMotion} key={label}>
-                  {label}
-                </motion.span>
-              ))}
-            </motion.div>
-
-            <motion.div variants={itemMotion} className="cover-contact-strip">
-              <div>
-                <MapPin />
-                Istanbul, Türkiye
-              </div>
-              <a href="https://github.com/Remirdy" target="_blank" rel="noreferrer">
-                <Github />
-                GitHub: github.com/Remirdy
-              </a>
+            <motion.div variants={rise} className="mt-8 flex flex-wrap gap-3 text-sm font-bold text-white/70">
+              <span className="flex items-center gap-2 rounded-xl border border-cyan-200/20 bg-black/25 px-4 py-3"><MapPin className="text-cyan-300" /> Istanbul, Turkiye</span>
+              <a className="flex items-center gap-2 rounded-xl border border-cyan-200/20 bg-black/25 px-4 py-3 hover:text-cyan-200" href="https://github.com/Remirdy" target="_blank" rel="noreferrer"><Github className="text-cyan-300" /> github.com/Remirdy</a>
             </motion.div>
           </div>
-
-          <TechIllustration />
+          <HeroVisual />
         </div>
       </Panel>
 
-      <Panel id="about" page="02" eyebrow="PAGE 02" className="profile-panel">
-        <div className="section-title-block">
-          <h2>PROFILE &amp; EXPERTISE</h2>
-          <p className="about-text">
-            I am a Computer Engineering student with a strong interest in game development,
-            interactive design, AI-assisted visual production, and motion-driven interfaces.
-            I enjoy combining software, animation, and storytelling to create engaging digital
-            experiences that feel polished, playful, and technically solid.
-          </p>
-        </div>
-
-        <div className="profile-grid">
-          <motion.div variants={stagger} className="data-panel core-strengths-panel">
-            <div className="data-panel-header"><span>1</span> CORE STRENGTHS</div>
-            <div className="skills-grid">
-              {coreStrengths.map((skill) => (
-                <SkillBox key={skill.title} skill={skill} />
-              ))}
-            </div>
-          </motion.div>
-
-          <motion.div variants={stagger} className="data-panel tools-panel">
-            <div className="data-panel-header"><span>2</span> TOOLS &amp; WORKFLOW</div>
-            <div className="tools-grid">
-              {tools.map((skill) => (
-                <SkillBox key={skill.title} skill={skill} />
-              ))}
-            </div>
-          </motion.div>
-
-          <motion.div variants={stagger} className="data-panel experience-panel">
-            <div className="data-panel-header"><span>3</span> EXPERIENCE HIGHLIGHTS</div>
-            <div className="experience-list">
-              {experiences.map((item) => (
-                <ExperienceCard key={item.title} item={item} />
-              ))}
-            </div>
-          </motion.div>
-        </div>
-
-        <motion.div variants={itemMotion} className="education-strip">
-          <div className="data-panel-header"><span>4</span> EDUCATION</div>
-          <div className="education-content">
-            <GraduationCap />
-            <strong>Istanbul Ticaret University — Computer Engineering</strong>
+      <Panel id="about" eyebrow="Profile Operating System">
+        <div className="grid gap-8 lg:grid-cols-[.75fr_1.25fr]">
+          <div>
+            <h2 className="text-[clamp(46px,7vw,92px)] font-black uppercase leading-[.9] tracking-[-.06em]">Profile<br />Dashboard</h2>
+            <p className="mt-5 text-lg leading-relaxed text-white/65">I combine software, animation, interface design and visual storytelling to build playful, polished and technically structured digital products.</p>
           </div>
+          <motion.div variants={group} className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {skills.map(([name, Icon]) => <SkillCell key={name as string} name={name as string} Icon={Icon} />)}
+          </motion.div>
+        </div>
+        <div className="mt-8 grid gap-4 lg:grid-cols-4">
+          {workflow.map(([title, text], i) => <motion.div variants={card} key={title} className="data-card rounded-2xl p-5"><div className="mb-4 text-4xl font-black text-cyan-300/40">0{i + 1}</div><h3 className="text-xl font-black">{title}</h3><p className="mt-2 text-sm leading-relaxed text-white/60">{text}</p></motion.div>)}
+        </div>
+      </Panel>
+
+      <Panel id="projects" eyebrow="Featured Case Study">
+        <div className="grid gap-8 lg:grid-cols-[.9fr_1.1fr]">
+          <div>
+            <h2 className="text-[clamp(56px,8vw,106px)] font-black uppercase leading-[.88] tracking-[-.07em]">Dirty<br />Birdy!</h2>
+            <p className="mt-5 max-w-lg border-l-4 border-cyan-300/45 pl-5 text-lg leading-relaxed text-white/68">A mobile arcade case study presented as a living system: character choice, chaos feedback, missions, stats, combo language, promotional visuals and animated HUD direction.</p>
+            <div className="mt-6 grid gap-3 sm:grid-cols-2">
+              {['Cartoon identity', 'Combo feedback', 'Power-up UI', 'Mission systems'].map((x) => <div key={x} className="data-card rounded-2xl p-4 text-sm font-black text-white/75"><ShieldCheck className="mb-2 text-cyan-300" />{x}</div>)}
+            </div>
+          </div>
+          <motion.div variants={group} className="grid gap-4 sm:grid-cols-2">
+            {['Choose Your Bird', 'Aim Drop Chaos', 'Mission Flow', 'Detailed Stats'].map((x, i) => <motion.div variants={card} key={x} className={`${i === 0 ? 'sm:col-span-2 min-h-64' : 'min-h-44'} relative overflow-hidden rounded-3xl border border-cyan-200/20 bg-gradient-to-br from-amber-300 via-amber-800 to-black p-5`}><div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_85%,rgba(255,244,173,.42)_0_52px,transparent_54px),radial-gradient(circle_at_72%_70%,rgba(255,211,101,.3)_0_58px,transparent_60px)]" /><div className="relative z-10 text-3xl font-black leading-none text-amber-50 [text-shadow:0_3px_0_rgba(74,35,4,.75)]">{x}</div><div className="absolute bottom-5 right-5 aspect-video w-40 -rotate-3 rounded-2xl border-[7px] border-black bg-gradient-to-b from-sky-300 via-white to-orange-700 shadow-2xl"><span className="absolute bottom-3 left-1/4 h-6 w-6 rounded-full bg-red-700" /><span className="absolute bottom-3 left-1/2 h-6 w-6 rounded-full bg-yellow-300" /></div></motion.div>)}
+          </motion.div>
+        </div>
+      </Panel>
+
+      <Panel id="contact" eyebrow="Project Lab and Contact">
+        <h2 className="mb-8 text-[clamp(46px,7vw,92px)] font-black uppercase leading-[.9] tracking-[-.06em]">Selected Projects<br /><span className="text-cyan-300">and Collaboration</span></h2>
+        <motion.div variants={group} className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
+          {projects.map((p, i) => <ProjectCard key={p.title} p={p} i={i} />)}
         </motion.div>
-      </Panel>
-
-      <Panel id="projects" page="03" eyebrow="FEATURED PROJECT" className="dirty-panel">
-        <div className="dirty-grid">
-          <div className="dirty-info">
-            <h2>DIRTY BIRDY!</h2>
-            <p className="dirty-description">
-              Dirty Birdy! is a fast-paced mobile arcade game built around timing,
-              chaos, cartoon energy, and playful humor. The experience combines engaging
-              gameplay, animated feedback, memorable UI, and a strong comedic identity.
-            </p>
-
-            <div className="project-summary-card">
-              <h3>PROJECT SUMMARY</h3>
-              <dl>
-                <div>
-                  <dt>Role Focus:</dt>
-                  <dd>Game concept, UI ideas, visual direction, creative production</dd>
-                </div>
-                <div>
-                  <dt>Platform:</dt>
-                  <dd>Mobile</dd>
-                </div>
-                <div>
-                  <dt>Genre:</dt>
-                  <dd>Arcade / Casual</dd>
-                </div>
-                <div>
-                  <dt>Highlights:</dt>
-                  <dd>Cartoon identity, combo system, power-ups, animated interfaces</dd>
-                </div>
-              </dl>
-            </div>
-
-            <div className="contributions-card">
-              <h3>KEY CONTRIBUTIONS</h3>
-              <ul>
-                <li>UI / HUD concepts</li>
-                <li>Game feel and visual feedback ideas</li>
-                <li>Creative direction for promotional visuals</li>
-                <li>AI-assisted design and content workflows</li>
-              </ul>
-            </div>
-
-            <div className="store-note">
-              <span>DB!</span>
-              <p>
-                Screenshots sourced from official store listings.
-                <br />
-                Available on App Store &amp; Google Play
-              </p>
-            </div>
-          </div>
-
-          <motion.div variants={stagger} className="dirty-gallery">
-            <DirtyVisualCard size="large" headline="Cause Chaos. Rule the Sky." subline="Be Legendary • Be Dirty!" />
-            <DirtyVisualCard headline="Who Will Rule the Sky?" subline="Choose Your Bird • Pick Your Chaos Style" />
-            <DirtyVisualCard headline="Aim. Drop. Chaos." subline="Chaos Combo • Perfect Drop!" />
-            <DirtyVisualCard headline="Missions That Keep the Chaos Going" subline="Complete Missions • Unlock More Chaos" />
-            <DirtyVisualCard headline="Detailed Player Stats" subline="Track your progress • Proof of your chaos" />
-          </motion.div>
+        <div className="mt-8 grid gap-5 lg:grid-cols-[1fr_1.2fr]">
+          <div className="data-card rounded-3xl p-6"><h3 className="mb-5 text-2xl font-black">What I bring</h3><div className="grid gap-3 sm:grid-cols-2">{['Game-focused thinking', 'Clean visual communication', 'Strong creative iteration', 'AI-assisted production'].map((x) => <div key={x} className="rounded-2xl border border-cyan-200/15 bg-white/[.03] p-4 text-sm font-black text-white/70"><Zap className="mb-2 text-cyan-300" />{x}</div>)}</div></div>
+          <div className="data-card rounded-3xl p-6"><h3 className="text-4xl font-black tracking-tight">Let us build something creative.</h3><p className="mt-3 text-white/60">Open to internships, freelance work and creative collaborations.</p><a className="mt-6 inline-flex items-center gap-3 rounded-2xl bg-white px-6 py-4 font-black text-black hover:bg-cyan-200" href="https://github.com/Remirdy" target="_blank" rel="noreferrer">Open GitHub <ExternalLink /></a></div>
         </div>
       </Panel>
-
-      <Panel id="contact" page="04" eyebrow="SELECTED PROJECTS" className="contact-panel">
-        <div className="contact-heading">
-          <h2>
-            SELECTED PROJECTS
-            <br />
-            <span>&amp;</span> CONTACT
-          </h2>
-        </div>
-
-        <motion.div variants={stagger} className="projects-grid">
-          {projects.map((project) => (
-            <ProjectCard key={project.title} project={project} />
-          ))}
-        </motion.div>
-
-        <div className="contact-bottom-grid">
-          <motion.div variants={itemMotion} className="what-i-bring data-panel">
-            <div className="data-panel-header">WHAT I BRING</div>
-            <div className="bring-grid">
-              {bringItems.map((item) => (
-                <div key={item.label}>
-                  <span>{item.icon}</span>
-                  <p>{item.label}</p>
-                </div>
-              ))}
-            </div>
-          </motion.div>
-
-          <motion.div variants={itemMotion} className="contact-card data-panel">
-            <div className="contact-lines">
-              <div>
-                <Sparkles />
-                <span>Open to internships, freelance work, and creative collaborations</span>
-              </div>
-              <div>
-                <MapPin />
-                <span>Location: Istanbul, Türkiye</span>
-              </div>
-              <a href="https://github.com/Remirdy" target="_blank" rel="noreferrer">
-                <Github />
-                <span>GitHub: github.com/Remirdy</span>
-                <ExternalLink />
-              </a>
-              <div>
-                <Aperture />
-                <span>Portfolio Focus: Game Development • Creative Technology • Motion Design</span>
-              </div>
-            </div>
-            <div className="build-cta">
-              <p>Let’s build something creative.</p>
-              <ArrowRight />
-            </div>
-          </motion.div>
-        </div>
-      </Panel>
-
-      <footer className="portfolio-footer">
-        <span>© {new Date().getFullYear()} Emirhan Doygun</span>
-        <a href="https://github.com/Remirdy" target="_blank" rel="noreferrer">
-          View GitHub <ArrowUpRight />
-        </a>
-      </footer>
     </main>
   )
 }
