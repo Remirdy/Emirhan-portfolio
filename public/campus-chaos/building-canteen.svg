@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="220" height="170" viewBox="0 0 220 170">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#ffe9be"/>
+      <stop offset="1" stop-color="#ffd06b"/>
+    </linearGradient>
+    <linearGradient id="roof" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#ff8f48"/>
+      <stop offset="1" stop-color="#ff5c3a"/>
+    </linearGradient>
+  </defs>
+  <rect width="220" height="170" rx="32" fill="url(#bg)"/>
+  <ellipse cx="110" cy="140" rx="68" ry="16" fill="#000" opacity="0.12"/>
+  <path d="M40 78L110 26L180 78Z" fill="url(#roof)"/>
+  <rect x="49" y="75" width="122" height="60" rx="18" fill="#fff8e8" stroke="#e4a342" stroke-width="4"/>
+  <rect x="62" y="88" width="32" height="32" rx="10" fill="#ffd98f"/>
+  <rect x="100" y="88" width="22" height="32" rx="10" fill="#ffd98f"/>
+  <rect x="128" y="88" width="30" height="32" rx="10" fill="#ffd98f"/>
+  <rect x="86" y="112" width="48" height="23" rx="9" fill="#8b5a2b"/>
+  <rect x="72" y="54" width="76" height="16" rx="8" fill="#8b5a2b"/>
+  <text x="110" y="66" font-family="Arial" font-size="12" font-weight="700" fill="#fff" text-anchor="middle">CANTEEN</text>
+</svg>
