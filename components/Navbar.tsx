@@ -7,27 +7,35 @@ export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false)
 
   const links = [
-    { href: '#about', label: 'Profile' },
-    { href: '#projects', label: 'Dirty Birdy!' },
+    { href: '/', label: 'Profile' },
+    { href: '/#dirty', label: 'Dirty Birdy!' },
     { href: '/play', label: 'Play' },
-    { href: '#contact', label: 'Projects' },
+    { href: '/#imageforge', label: 'Projects' },
   ]
 
   const navigateTo = (href: string) => {
-    if (href.startsWith('/')) {
-      window.location.href = href
+    const isHome = window.location.pathname === '/'
+
+    if (href === '/' && isHome) {
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+      setIsOpen(false)
       return
     }
 
-    const element = document.querySelector(href)
-    if (element) element.scrollIntoView({ behavior: 'smooth', block: 'start' })
-    setIsOpen(false)
+    if (href.startsWith('/#') && isHome) {
+      const element = document.querySelector(href.replace('/', ''))
+      if (element) element.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      setIsOpen(false)
+      return
+    }
+
+    window.location.href = href
   }
 
   return (
     <nav className="fixed left-1/2 top-4 z-50 w-[min(1120px,calc(100%-24px))] -translate-x-1/2 rounded-2xl border border-cyan-300/15 bg-[#02070d]/70 px-4 py-3 text-white shadow-2xl shadow-black/30 backdrop-blur-2xl">
       <div className="flex items-center justify-between gap-4">
-        <button onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} className="group flex items-center gap-3 text-left">
+        <button onClick={() => navigateTo('/')} className="group flex items-center gap-3 text-left">
           <span className="grid h-9 w-9 place-items-center rounded-xl border border-cyan-300/25 bg-cyan-300/10 text-sm font-black text-cyan-200">ED</span>
           <span>
             <span className="block text-sm font-bold tracking-tight">Emirhan Doygun</span>
