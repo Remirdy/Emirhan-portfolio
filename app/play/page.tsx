@@ -53,7 +53,6 @@ function SophisticatedBaker({ characterSpeed }: { characterSpeed: number }) {
       const targetRot = Math.atan2(move.x, move.z);
       groupRef.current.rotation.y = THREE.MathUtils.lerp(groupRef.current.rotation.y, targetRot, 0.22);
 
-      // Slower, heavier acceleration (more human-like)
       velocity.current.lerp(move.multiplyScalar(characterSpeed), 0.18);
     } else {
       velocity.current.lerp(new THREE.Vector3(), 0.12);
@@ -61,23 +60,19 @@ function SophisticatedBaker({ characterSpeed }: { characterSpeed: number }) {
 
     groupRef.current.position.add(velocity.current.clone().multiplyScalar(delta * 52));
 
-    // Bounds
     const p = groupRef.current.position;
     p.x = Math.max(-12, Math.min(12, p.x));
     p.z = Math.max(-8, Math.min(6, p.z));
     p.y = 0;
 
-    // Cinematic slow camera follow
     const camTarget = p.clone().add(new THREE.Vector3(0, 7.2, 10.8));
     camera.position.lerp(camTarget, 0.07);
     camera.lookAt(p.x, 3.5, p.z);
 
-    // Elegant, slow walk animation
     const t = state.clock.elapsedTime * 11;
     const bob = Math.sin(t) * 0.07;
     groupRef.current.position.y = bob * 0.4 + 0.1;
 
-    // Slow, natural arm swing
     const leftArm = groupRef.current.children.find((c: any) => c.userData?.name === 'leftArm') as THREE.Group | undefined;
     const rightArm = groupRef.current.children.find((c: any) => c.userData?.name === 'rightArm') as THREE.Group | undefined;
     if (leftArm) leftArm.rotation.x = Math.sin(t) * 1.35;
@@ -86,25 +81,18 @@ function SophisticatedBaker({ characterSpeed }: { characterSpeed: number }) {
 
   return (
     <group ref={groupRef}>
-      {/* Body - White chef jacket */}
       <mesh position={[0, 1.9, 0]} castShadow>
         <capsuleGeometry args={[0.48, 1.2, 5]} />
         <meshStandardMaterial color="#f8fafc" />
       </mesh>
-
-      {/* Dark apron with subtle detail */}
       <mesh position={[0, 1.55, 0.38]} castShadow>
         <boxGeometry args={[1.05, 1.35, 0.1]} />
         <meshStandardMaterial color="#1e2937" />
       </mesh>
-
-      {/* Head */}
       <mesh position={[0, 3.7, 0]} castShadow>
         <sphereGeometry args={[0.52]} />
         <meshStandardMaterial color="#fcd34d" />
       </mesh>
-
-      {/* Professional chef hat */}
       <mesh position={[0, 4.35, 0]}>
         <cylinderGeometry args={[0.62, 0.78, 0.5, 32]} />
         <meshStandardMaterial color="#ffffff" />
@@ -113,8 +101,6 @@ function SophisticatedBaker({ characterSpeed }: { characterSpeed: number }) {
         <sphereGeometry args={[0.5]} />
         <meshStandardMaterial color="#f1f5f9" />
       </mesh>
-
-      {/* Eyes */}
       <mesh position={[-0.18, 3.82, 0.48]}>
         <sphereGeometry args={[0.1]} />
         <meshStandardMaterial color="#1e2937" />
@@ -123,8 +109,6 @@ function SophisticatedBaker({ characterSpeed }: { characterSpeed: number }) {
         <sphereGeometry args={[0.1]} />
         <meshStandardMaterial color="#1e2937" />
       </mesh>
-
-      {/* Left Arm */}
       <group position={[-0.72, 2.4, 0]} userData={{ name: 'leftArm' }}>
         <mesh>
           <capsuleGeometry args={[0.155, 0.8, 4]} />
@@ -135,8 +119,6 @@ function SophisticatedBaker({ characterSpeed }: { characterSpeed: number }) {
           <meshStandardMaterial color="#fcd34d" />
         </mesh>
       </group>
-
-      {/* Right Arm */}
       <group position={[0.72, 2.4, 0]} userData={{ name: 'rightArm' }}>
         <mesh>
           <capsuleGeometry args={[0.155, 0.8, 4]} />
@@ -147,8 +129,6 @@ function SophisticatedBaker({ characterSpeed }: { characterSpeed: number }) {
           <meshStandardMaterial color="#fcd34d" />
         </mesh>
       </group>
-
-      {/* Legs - Dark trousers */}
       <mesh position={[-0.26, 0.72, 0]} castShadow>
         <capsuleGeometry args={[0.18, 1.0, 4]} />
         <meshStandardMaterial color="#334155" />
@@ -181,20 +161,16 @@ function CustomerMesh({ customer }: { customer: Customer }) {
 function PremiumBakery() {
   return (
     <>
-      {/* Back Wall - Warm tone */}
       <mesh position={[0, 5.2, -11.5]}>
         <boxGeometry args={[36, 10.5, 0.9]} />
         <meshStandardMaterial color="#57534e" />
       </mesh>
-
-      {/* Premium Wooden Shelves with Donuts */}
       {[-8, 0, 8].map((x, i) => (
         <group key={i} position={[x, 4.5, -10.8]}>
           <mesh>
             <boxGeometry args={[5.8, 0.22, 1.6]} />
             <meshStandardMaterial color="#44403c" />
           </mesh>
-          {/* Donuts on shelf */}
           {[-1.8, 0, 1.8].map((dx, j) => (
             <mesh key={j} position={[dx, 0.35, 0]}>
               <torusGeometry args={[0.32, 0.16, 8, 18]} />
@@ -203,14 +179,10 @@ function PremiumBakery() {
           ))}
         </group>
       ))}
-
-      {/* Large Elegant Window */}
       <mesh position={[-13.5, 5.5, 0]}>
         <boxGeometry args={[0.5, 7.5, 11]} />
         <meshStandardMaterial color="#e7e5e4" transparent opacity={0.18} />
       </mesh>
-
-      {/* Main Counter - Premium */}
       <mesh position={[0, 1.2, -8]} castShadow receiveShadow>
         <boxGeometry args={[16.5, 2.4, 4]} />
         <meshStandardMaterial color="#78350f" />
@@ -219,8 +191,6 @@ function PremiumBakery() {
         <boxGeometry args={[15.8, 0.22, 3.6]} />
         <meshStandardMaterial color="#431407" />
       </mesh>
-
-      {/* Cooking Stations */}
       {[-6, 6].map((x, i) => (
         <group key={i} position={[x, 0, 4.2]}>
           <mesh position={[0, 1.05, 0]} castShadow>
@@ -413,6 +383,11 @@ export default function DonutPlaceSophisticated() {
 
         <p className="text-center text-[10px] text-amber-500/50 mt-8 tracking-[1.5px]">
           DONUT PLACE 3D • Premium Sophisticated Bakery • Her servis {moneyPerServe}$ • Menzil {serveRange.toFixed(1)}m
+        </p>
+
+        {/* KÜÇÜK KREDİ */}
+        <p className="text-center text-[9px] text-amber-500/30 mt-3 tracking-[0.5px]">
+          3D Character model by <a href="https://skfb.ly/6WPZD" target="_blank" className="underline hover:text-amber-400">Diana Liu</a> (CC BY 4.0)
         </p>
       </div>
     </div>
