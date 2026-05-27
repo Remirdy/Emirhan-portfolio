@@ -1,433 +1,514 @@
 'use client';
 
-import React, { useEffect, useRef, useState, useCallback } from 'react';
+import React, { useRef, useState, useEffect, useCallback } from 'react';
+import { Canvas, useFrame, useThree } from '@react-three/fiber';
+import { Html } from '@react-three/drei';
+import * as THREE from 'three';
 
-export default function PlayPage() {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [money, setMoney] = useState(500);
-  const [score, setScore] = useState(0);
-  const [level, setLevel] = useState(1);
+// ==================== TYPES ====================
+interface Customer {
+  id: number;
+  position: THREE.Vector3;
+  target: THREE.Vector3;
+  state: 'walking' | 'waiting' | 'served';
+  speed: number;
+  waitTime: number;
+}
 
-  // Game parameters (mutable via refs for performance)
-  const gameParams = useRef({
-    playerSpeed: 5,
-    spawnInterval: 1200, // ms
-    moneyMultiplier: 1,
-    serveRange: 55,
-    customerSpeed: 1.8,
-    nextSpawnTime: 0,
+interface FloatingText {
+  id: number;
+  position: THREE.Vector3;
+  text: string;
+  life: number;
+}
+
+// ==================== 3D CHARACTER ====================
+function Character({ 
+  onServe, 
+  serveRange, 
+  characterSpeed 
+}: { 
+  onServe: (customerId: number, position: THREE.Vector3) => void; 
+  serveRange: number;
+  characterSpeed: number;
+}) {
+  const groupRef = useRef<THREE.Group>(null!);
+  const { camera } = useThree();
+  const keys = useRef<{ [key: string]: boolean }>({});
+  const velocity = useRef(new THREE.Vector3());
+
+  // Keyboard
+  useEffect(() => {
+    const down = (e: KeyboardEvent) => { keys.current[e.key.toLowerCase()] = true; };
+    const up = (e: KeyboardEvent) => { keys.current[e.key.toLowerCase()] = false; };
+    window.addEventListener('keydown', down);
+    window.addEventListener('keyup', up);
+    return () => {
+      window.removeEventListener('keydown', down);
+      window.removeEventListener('keyup', up);
+    };
+  }, []);
+
+  useFrame((state, delta) => {
+    if (!groupRef.current) return;
+
+    const move = new THREE.Vector3();
+    if (keys.current['w'] || keys.current['arrowup']) move.z -= 1;
+    if (keys.current['s'] || keys.current['arrowdown']) move.z += 1;
+    if (keys.current['a'] || keys.current['arrowleft']) move.x -= 1;
+    if (keys.current['d'] || keys.current['arrowright']) move.x += 1;
+
+    if (move.lengthSq() > 0.001) {
+      move.normalize();
+      const targetRot = Math.atan2(move.x, move.z);
+      groupRef.current.rotation.y = THREE.MathUtils.lerp(groupRef.current.rotation.y, targetRot, 0.25);
+
+      velocity.current.lerp(move.multiplyScalar(characterSpeed), 0.4);
+    } else {
+      velocity.current.lerp(new THREE.Vector3(), 0.3);
+    }
+
+    groupRef.current.position.add(velocity.current.clone().multiplyScalar(delta * 60));
+
+    // Bounds
+    const p = groupRef.current.position;
+    p.x = Math.max(-14, Math.min(14, p.x));
+    p.z = Math.max(-10, Math.min(8, p.z));
+    p.y = 0;
+
+    // Camera follow (third person style)
+    const camTarget = p.clone().add(new THREE.Vector3(0, 9, 13));
+    camera.position.lerp(camTarget, 0.12);
+    camera.lookAt(p.x, 2.5, p.z);
+
+    // Simple walk bob
+    groupRef.current.position.y = Math.sin(state.clock.elapsedTime * 12) * 0.08 + 0.1;
   });
 
-  const moneyRef = useRef(500);
-  const scoreRef = useRef(0);
+  return (
+    <group ref={groupRef}>
+      {/* Body */}
+      <mesh position={[0, 1.6, 0]} castShadow>
+        <capsuleGeometry args={[0.55, 1.4, 6]} />
+        <meshStandardMaterial color="#f59e0b" />
+      </mesh>
+      {/* Head */}
+      <mesh position={[0, 3.4, 0]} castShadow>
+        <sphereGeometry args={[0.6]} />
+        <meshStandardMaterial color="#fcd34d" />
+      </mesh>
+      {/* Chef Hat */}
+      <mesh position={[0, 4.15, 0]}>
+        <cylinderGeometry args={[0.75, 0.95, 0.7, 32]} />
+        <meshStandardMaterial color="#ffffff" />
+      </mesh>
+      {/* Eyes */}
+      <mesh position={[-0.22, 3.5, 0.52]}>
+        <sphereGeometry args={[0.13]} />
+        <meshStandardMaterial color="#1f2937" />
+      </mesh>
+      <mesh position={[0.22, 3.5, 0.52]}>
+        <sphereGeometry args={[0.13]} />
+        <meshStandardMaterial color="#1f2937" />
+      </mesh>
+      {/* Smile */}
+      <mesh position={[0, 3.15, 0.55]}>
+        <torusGeometry args={[0.18, 0.04, 8, 20, Math.PI]} />
+        <meshStandardMaterial color="#1f2937" />
+      </mesh>
+    </group>
+  );
+}
 
-  // Game objects
-  const playerRef = useRef({ x: 450, y: 320, size: 28 });
-  const customersRef = useRef<any[]>([]);
-  const floatingTextsRef = useRef<any[]>([]);
-  const keysRef = useRef<{ [key: string]: boolean }>({});
+// ==================== CUSTOMER ====================
+function CustomerMesh({ customer, onClick }: { customer: Customer; onClick: (id: number) => void }) {
+  return (
+    <group 
+      position={[customer.position.x, 0, customer.position.z]}
+      onClick={() => onClick(customer.id)}
+    >
+      <mesh position={[0, 1.3, 0]} castShadow>
+        <capsuleGeometry args={[0.4, 1.0]} />
+        <meshStandardMaterial color={customer.state === 'waiting' ? '#4ade80' : '#86efac'} />
+      </mesh>
+      <mesh position={[0, 2.0, 0]}>
+        <sphereGeometry args={[0.38]} />
+        <meshStandardMaterial color="#86efac" />
+      </mesh>
+      {customer.state === 'waiting' && (
+        <Html position={[0, 3.2, 0]} style={{ pointerEvents: 'none' }}>
+          <div className="text-[10px] bg-black/70 text-white px-2 py-0.5 rounded">Servis et!</div>
+        </Html>
+      )}
+    </group>
+  );
+}
 
-  const lastTimeRef = useRef(0);
-  const animationFrameRef = useRef<number | null>(null);
+// ==================== SHOP SCENE ====================
+function ShopScene({ 
+  customers, 
+  onServeCustomer,
+  floatingTexts,
+  serveRange 
+}: { 
+  customers: Customer[];
+  onServeCustomer: (id: number, pos: THREE.Vector3) => void;
+  floatingTexts: FloatingText[];
+  serveRange: number;
+}) {
+  const characterRef = useRef<THREE.Group>(null!);
 
-  // Update displayed money/score from refs (throttled)
-  const syncUI = useCallback(() => {
-    setMoney(Math.floor(moneyRef.current));
-    setScore(Math.floor(scoreRef.current));
-  }, []);
-
-  // Spawn a new customer
-  const spawnCustomer = useCallback(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const x = 120 + Math.random() * (canvas.width - 240);
-    customersRef.current.push({
-      x,
-      y: 80,
-      size: 22,
-      speed: gameParams.current.customerSpeed + (Math.random() - 0.5) * 0.4,
-      served: false,
-    });
-  }, []);
-
-  // Main game update logic
-  const updateGame = useCallback((delta: number) => {
-    const player = playerRef.current;
-    const customers = customersRef.current;
-    const params = gameParams.current;
-    const keys = keysRef.current;
-
-    // Player movement
-    let moved = false;
-    if (keys['w'] || keys['ArrowUp']) { player.y -= params.playerSpeed; moved = true; }
-    if (keys['s'] || keys['ArrowDown']) { player.y += params.playerSpeed; moved = true; }
-    if (keys['a'] || keys['ArrowLeft']) { player.x -= params.playerSpeed; moved = true; }
-    if (keys['d'] || keys['ArrowRight']) { player.x += params.playerSpeed; moved = true; }
-
-    // Clamp player to bounds (play area)
-    const margin = 40;
-    player.x = Math.max(margin, Math.min(960 - margin, player.x));
-    player.y = Math.max(140, Math.min(520, player.y));
-
-    // Update customers
-    for (let i = customers.length - 1; i >= 0; i--) {
-      const c = customers[i];
-      if (c.served) {
-        customers.splice(i, 1);
-        continue;
-      }
-
-      // Move towards counter (bottom area)
-      const targetY = 420;
-      if (c.y < targetY) {
-        c.y += c.speed;
-      }
-
-      // Check if player can serve this customer
-      const dx = player.x - c.x;
-      const dy = player.y - c.y;
-      const dist = Math.sqrt(dx * dx + dy * dy);
-
-      if (dist < params.serveRange && c.y > 280) {
-        // SERVE!
-        const earn = Math.floor(25 * params.moneyMultiplier);
-        moneyRef.current += earn;
-        scoreRef.current += earn * 2;
-
-        // Floating text
-        floatingTextsRef.current.push({
-          x: c.x,
-          y: c.y - 10,
-          text: `+${earn}$`,
-          life: 45,
-          vy: -1.2,
-        });
-
-        c.served = true;
-
-        // Occasional level up
-        if (scoreRef.current > level * 800) {
-          setLevel(l => l + 1);
-          params.playerSpeed += 0.4;
-          params.customerSpeed += 0.15;
-        }
-      }
-
-      // Remove if went past counter without service
-      if (c.y > 520) {
-        customers.splice(i, 1);
-      }
-    }
-
-    // Spawn new customers
-    const now = Date.now();
-    if (now > params.nextSpawnTime) {
-      spawnCustomer();
-      params.nextSpawnTime = now + params.spawnInterval;
-    }
-
-    // Update floating texts
-    for (let i = floatingTextsRef.current.length - 1; i >= 0; i--) {
-      const t = floatingTextsRef.current[i];
-      t.y += t.vy;
-      t.life--;
-      if (t.life <= 0) floatingTextsRef.current.splice(i, 1);
-    }
-
-    // Occasional UI sync
-    if (moved || Math.random() < 0.08) {
-      syncUI();
-    }
-  }, [level, spawnCustomer, syncUI]);
-
-  // Draw everything on canvas
-  const draw = useCallback((ctx: CanvasRenderingContext2D) => {
-    const w = ctx.canvas.width;
-    const h = ctx.canvas.height;
-    const player = playerRef.current;
-    const customers = customersRef.current;
-    const texts = floatingTextsRef.current;
-
-    // Background - warm donut shop floor
-    ctx.fillStyle = '#f5d8b0';
-    ctx.fillRect(0, 0, w, h);
-
-    // Subtle floor pattern
-    ctx.strokeStyle = '#e8c48a';
-    ctx.lineWidth = 1;
-    for (let x = 0; x < w; x += 40) {
-      ctx.beginPath();
-      ctx.moveTo(x, 0);
-      ctx.lineTo(x, h);
-      ctx.stroke();
-    }
-    for (let y = 0; y < h; y += 40) {
-      ctx.beginPath();
-      ctx.moveTo(0, y);
-      ctx.lineTo(w, y);
-      ctx.stroke();
-    }
-
-    // Counter (bottom area)
-    ctx.fillStyle = '#8b5a2b';
-    ctx.fillRect(60, 400, w - 120, 140);
-    ctx.fillStyle = '#6b4420';
-    ctx.fillRect(60, 400, w - 120, 12);
-
-    // Counter highlight
-    ctx.fillStyle = 'rgba(255,255,255,0.15)';
-    ctx.fillRect(60, 400, w - 120, 6);
-
-    // Player (Donut Chef)
-    ctx.save();
-    ctx.translate(player.x, player.y);
-    // Body
-    ctx.fillStyle = '#f59e0b';
-    ctx.beginPath();
-    ctx.arc(0, 0, player.size, 0, Math.PI * 2);
-    ctx.fill();
-    // Chef hat
-    ctx.fillStyle = '#fff';
-    ctx.fillRect(-player.size + 4, -player.size - 8, player.size * 2 - 8, 12);
-    ctx.fillStyle = '#f59e0b';
-    ctx.fillRect(-player.size + 8, -player.size - 14, player.size * 2 - 16, 8);
-    // Face / emoji overlay
-    ctx.fillStyle = '#111';
-    ctx.font = '22px Arial';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillText('👨‍🍳', 0, 4);
-    ctx.restore();
-
-    // Customers
+  // Basit servis kontrolü (karakter yaklaştığında)
+  const checkServe = useCallback((charPos: THREE.Vector3) => {
     customers.forEach(c => {
-      ctx.save();
-      ctx.translate(c.x, c.y);
-      ctx.fillStyle = '#4ade80';
-      ctx.beginPath();
-      ctx.arc(0, 0, c.size, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.fillStyle = '#166534';
-      ctx.font = '18px Arial';
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      ctx.fillText('🧑‍🍳', 0, 3);
-      ctx.restore();
+      if (c.state !== 'waiting') return;
+      const dist = charPos.distanceTo(c.position);
+      if (dist < serveRange) {
+        onServeCustomer(c.id, c.position.clone());
+      }
     });
+  }, [customers, onServeCustomer, serveRange]);
 
-    // Floating +money texts
-    ctx.font = 'bold 18px Arial';
-    ctx.textAlign = 'center';
-    texts.forEach(t => {
-      const alpha = Math.max(0.2, t.life / 45);
-      ctx.fillStyle = `rgba(16, 185, 129, ${alpha})`;
-      ctx.fillText(t.text, t.x, t.y);
-    });
+  useFrame(() => {
+    if (characterRef.current) {
+      checkServe(characterRef.current.position);
+    }
+  });
 
-    // Subtle serve zone indicator near counter
-    ctx.strokeStyle = 'rgba(245, 158, 11, 0.35)';
-    ctx.lineWidth = 3;
-    ctx.setLineDash([6, 4]);
-    ctx.beginPath();
-    ctx.arc(player.x, player.y, gameParams.current.serveRange, 0, Math.PI * 2);
-    ctx.stroke();
-    ctx.setLineDash([]);
+  return (
+    <>
+      {/* Zemin */}
+      <mesh rotation={[-Math.PI * 0.5, 0, 0]} position={[0, -0.05, 0]} receiveShadow>
+        <planeGeometry args={[42, 28]} />
+        <meshStandardMaterial color="#d4a373" />
+      </mesh>
+
+      {/* Tezgah */}
+      <mesh position={[0, 1.1, -9]} castShadow receiveShadow>
+        <boxGeometry args={[20, 2.2, 4.5]} />
+        <meshStandardMaterial color="#8b5a2b" />
+      </mesh>
+      <mesh position={[0, 2.3, -9]}>
+        <boxGeometry args={[19, 0.3, 4]} />
+        <meshStandardMaterial color="#6b4420" />
+      </mesh>
+
+      {/* Yan masalar */}
+      {[-8, 8].map((x, i) => (
+        <mesh key={i} position={[x, 0.8, 2]} castShadow>
+          <boxGeometry args={[4, 1.5, 3]} />
+          <meshStandardMaterial color="#854d0e" />
+        </mesh>
+      ))}
+
+      {/* 3D Karakter */}
+      <group ref={characterRef}>
+        <Character 
+          onServe={() => {}} 
+          serveRange={serveRange} 
+          characterSpeed={6.5} 
+        />
+      </group>
+
+      {/* Müşteriler */}
+      {customers.map(c => (
+        <CustomerMesh 
+          key={c.id} 
+          customer={c} 
+          onClick={(id) => onServeCustomer(id, c.position.clone())} 
+        />
+      ))}
+
+      {/* Floating +para yazıları */}
+      {floatingTexts.map(ft => (
+        <Html key={ft.id} position={[ft.position.x, ft.position.y + 2.5, ft.position.z]} style={{ pointerEvents: 'none' }}>
+          <div className="text-2xl font-bold text-emerald-400 drop-shadow" style={{ opacity: ft.life / 60 }}>
+            {ft.text}
+          </div>
+        </Html>
+      ))}
+
+      {/* Işıklar */}
+      <ambientLight intensity={0.55} />
+      <directionalLight 
+        position={[12, 25, 8]} 
+        intensity={1.3} 
+        castShadow 
+        shadow-mapSize={[1024, 1024]}
+      />
+    </>
+  );
+}
+
+// ==================== ANA OYUN ====================
+export default function DonutPlace3DAdvanced() {
+  const [money, setMoney] = useState(650);
+  const [score, setScore] = useState(1240);
+  const [level, setLevel] = useState(3);
+
+  const [customers, setCustomers] = useState<Customer[]>([]);
+  const [floatingTexts, setFloatingTexts] = useState<FloatingText[]>([]);
+
+  // Upgrade parametreleri
+  const [serveRange, setServeRange] = useState(4.2);
+  const [moneyPerServe, setMoneyPerServe] = useState(28);
+  const [spawnRate, setSpawnRate] = useState(2800); // ms
+  const [characterSpeed, setCharacterSpeed] = useState(6.5);
+
+  const nextSpawnRef = useRef(Date.now() + 1200);
+  const customerIdRef = useRef(100);
+
+  // Müşteri spawn
+  const spawnCustomer = useCallback(() => {
+    const x = (Math.random() - 0.5) * 26;
+    const z = (Math.random() - 0.5) * 16 - 2;
+    const newCustomer: Customer = {
+      id: customerIdRef.current++,
+      position: new THREE.Vector3(x, 0, z),
+      target: new THREE.Vector3(
+        (Math.random() - 0.5) * 22,
+        0,
+        (Math.random() - 0.5) * 12 - 1
+      ),
+      state: 'walking',
+      speed: 2.2 + Math.random() * 1.1,
+      waitTime: 0,
+    };
+    setCustomers(prev => [...prev, newCustomer]);
   }, []);
 
-  // Main game loop
-  const gameLoop = useCallback((timestamp: number) => {
-    const ctx = canvasRef.current?.getContext('2d', { alpha: true });
-    if (!ctx) return;
+  // Servis yap
+  const handleServe = useCallback((id: number, pos: THREE.Vector3) => {
+    setCustomers(prev => 
+      prev.map(c => 
+        c.id === id ? { ...c, state: 'served' as const } : c
+      )
+    );
 
-    if (!lastTimeRef.current) lastTimeRef.current = timestamp;
-    const delta = timestamp - lastTimeRef.current;
-    lastTimeRef.current = timestamp;
+    const earned = moneyPerServe;
+    setMoney(m => m + earned);
+    setScore(s => s + earned * 3);
 
-    updateGame(delta);
-    draw(ctx);
-
-    animationFrameRef.current = requestAnimationFrame(gameLoop);
-  }, [updateGame, draw]);
-
-  // Keyboard handling
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      keysRef.current[e.key] = true;
-      if (['w','a','s','d','ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.key)) {
-        e.preventDefault();
-      }
+    // Floating text
+    const newText: FloatingText = {
+      id: Date.now(),
+      position: pos.clone(),
+      text: `+${earned}$`,
+      life: 55,
     };
-    const handleKeyUp = (e: KeyboardEvent) => {
-      keysRef.current[e.key] = false;
-    };
+    setFloatingTexts(prev => [...prev, newText]);
 
-    window.addEventListener('keydown', handleKeyDown);
-    window.addEventListener('keyup', handleKeyUp);
+    // Level up kontrolü
+    setTimeout(() => {
+      setScore(s => {
+        if (s > level * 2200) {
+          setLevel(l => l + 1);
+          return s;
+        }
+        return s;
+      });
+    }, 200);
 
-    return () => {
-      window.removeEventListener('keydown', handleKeyDown);
-      window.removeEventListener('keyup', handleKeyUp);
-    };
-  }, []);
+    // Servis sonrası müşteri temizle
+    setTimeout(() => {
+      setCustomers(prev => prev.filter(c => c.id !== id));
+    }, 420);
+  }, [moneyPerServe, level]);
 
-  // Initialize canvas and start game
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-
-    // Set initial size (matches the visual container)
-    canvas.width = 1000;
-    canvas.height = 560;
-
-    const ctx = canvas.getContext('2d', { alpha: true });
-    if (ctx) {
-      // Initial draw
-      draw(ctx);
+  // Upgrade fonksiyonları
+  const buyUpgrade = (type: 'range' | 'money' | 'spawn' | 'speed') => {
+    if (type === 'range' && money >= 180) {
+      setMoney(m => m - 180);
+      setServeRange(r => Math.min(r + 1.1, 9));
     }
-
-    // Seed a few starting customers
-    customersRef.current = [
-      { x: 220, y: 140, size: 22, speed: 1.6, served: false },
-      { x: 480, y: 110, size: 22, speed: 1.9, served: false },
-      { x: 720, y: 155, size: 22, speed: 1.5, served: false },
-    ];
-
-    // Start the loop
-    lastTimeRef.current = 0;
-    animationFrameRef.current = requestAnimationFrame(gameLoop);
-
-    // Initial money sync
-    moneyRef.current = money;
-    scoreRef.current = score;
-
-    return () => {
-      if (animationFrameRef.current) cancelAnimationFrame(animationFrameRef.current);
-    };
-  }, [draw, gameLoop, money, score]);
-
-  // Upgrade handlers
-  const buyUpgrade = (type: 'speed' | 'spawn' | 'multi') => {
-    const params = gameParams.current;
-    let cost = 0;
-
-    if (type === 'speed') {
-      cost = 150;
-      if (moneyRef.current >= cost) {
-        moneyRef.current -= cost;
-        params.playerSpeed = Math.min(params.playerSpeed + 1.2, 12);
-        params.serveRange = Math.min(params.serveRange + 6, 90);
-      }
-    } else if (type === 'spawn') {
-      cost = 250;
-      if (moneyRef.current >= cost) {
-        moneyRef.current -= cost;
-        params.spawnInterval = Math.max(params.spawnInterval - 280, 420);
-        params.customerSpeed = Math.min(params.customerSpeed + 0.35, 4);
-      }
-    } else if (type === 'multi') {
-      cost = 400;
-      if (moneyRef.current >= cost) {
-        moneyRef.current -= cost;
-        params.moneyMultiplier = Math.min(params.moneyMultiplier + 0.6, 4.5);
-      }
+    if (type === 'money' && money >= 320) {
+      setMoney(m => m - 320);
+      setMoneyPerServe(m => Math.floor(m * 1.45));
     }
-
-    if (cost > 0 && moneyRef.current >= 0) {
-      syncUI();
+    if (type === 'spawn' && money >= 260) {
+      setMoney(m => m - 260);
+      setSpawnRate(r => Math.max(r - 650, 850));
+    }
+    if (type === 'speed' && money >= 210) {
+      setMoney(m => m - 210);
+      setCharacterSpeed(s => Math.min(s + 1.8, 14));
     }
   };
 
+  // Game loop (müşteri hareketi + spawn)
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const now = Date.now();
+
+      // Spawn
+      if (now > nextSpawnRef.current && customers.length < 9) {
+        spawnCustomer();
+        nextSpawnRef.current = now + spawnRate;
+      }
+
+      // Müşteri hareket güncelle
+      setCustomers(prev => 
+        prev.map(c => {
+          if (c.state === 'served') return c;
+
+          const distToTarget = c.position.distanceTo(c.target);
+
+          if (c.state === 'walking' && distToTarget < 1.2) {
+            return { 
+              ...c, 
+              state: 'waiting', 
+              waitTime: now + 6500 + Math.random() * 4000 
+            };
+          }
+
+          if (c.state === 'waiting' && now > c.waitTime) {
+            // Yeni hedef belirle
+            const newTarget = new THREE.Vector3(
+              (Math.random() - 0.5) * 22,
+              0,
+              (Math.random() - 0.5) * 13 - 1
+            );
+            return { ...c, state: 'walking', target: newTarget };
+          }
+
+          if (c.state === 'walking') {
+            const dir = c.target.clone().sub(c.position).normalize();
+            const newPos = c.position.clone().add(dir.multiplyScalar(c.speed * 0.08));
+            return { ...c, position: newPos };
+          }
+          return c;
+        })
+      );
+
+      // Floating text güncelle
+      setFloatingTexts(prev => 
+        prev
+          .map(t => ({ ...t, life: t.life - 1 }))
+          .filter(t => t.life > 0)
+      );
+    }, 80);
+
+    return () => clearInterval(interval);
+  }, [spawnRate, customers.length, spawnCustomer]);
+
+  // Başlangıç müşterileri
+  useEffect(() => {
+    const initial: Customer[] = Array.from({ length: 5 }, (_, i) => ({
+      id: 10 + i,
+      position: new THREE.Vector3((i - 2) * 5.5, 0, -3 - i * 1.2),
+      target: new THREE.Vector3((i - 2) * 4.5, 0, 2 + Math.random() * 4),
+      state: 'walking',
+      speed: 2.4,
+      waitTime: 0,
+    }));
+    setCustomers(initial);
+  }, []);
+
   return (
-    <div className="min-h-screen bg-gradient-to-b from-amber-950 to-orange-950 flex flex-col items-center justify-center p-4 text-amber-100">
-      <div className="w-full max-w-[1100px]">
+    <div className="min-h-screen bg-gradient-to-b from-[#1a120b] via-[#2c2118] to-[#1a120b] text-white overflow-hidden">
+      <div className="max-w-[1280px] mx-auto p-5">
         {/* Header */}
-        <div className="flex justify-between items-center mb-4 px-2">
-          <div className="flex items-center gap-3">
-            <span className="text-6xl drop-shadow">🍩</span>
-            <h1 className="text-5xl font-bold tracking-[-2px] text-amber-300">DONUT PLACE</h1>
+        <div className="flex items-end justify-between mb-4 px-2">
+          <div className="flex items-center gap-4">
+            <div className="text-7xl drop-shadow">🍩</div>
+            <div>
+              <div className="text-6xl font-bold tracking-[-3.5px] text-amber-300">DONUT PLACE</div>
+              <div className="text-amber-400/70 text-sm -mt-1 tracking-[3px]">3D EDITION</div>
+            </div>
           </div>
-          <div className="flex items-center gap-8 text-2xl">
-            <div className="flex items-center gap-2 bg-black/30 px-5 py-1.5 rounded-2xl border border-amber-800/60">
-              <span>💰</span>
-              <span className="font-mono tabular-nums tracking-wider">{money}</span>
+
+          <div className="flex items-center gap-5 text-3xl font-mono">
+            <div className="bg-black/40 border border-amber-900/60 px-6 py-2 rounded-2xl flex items-center gap-3">
+              <span>💰</span> <span className="tabular-nums">{money}</span>
             </div>
-            <div className="flex items-center gap-2 bg-black/30 px-5 py-1.5 rounded-2xl border border-amber-800/60">
-              <span>⭐</span>
-              <span className="font-mono tabular-nums tracking-wider">{score}</span>
+            <div className="bg-black/40 border border-amber-900/60 px-6 py-2 rounded-2xl flex items-center gap-3">
+              <span>⭐</span> <span className="tabular-nums">{score}</span>
             </div>
-            <div className="px-4 py-1.5 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-300 text-lg font-medium">
-              Lv. {level}
+            <div className="bg-amber-500/10 border border-amber-500/40 px-5 py-2 rounded-2xl text-2xl font-medium text-amber-300">
+              Lv.{level}
             </div>
           </div>
         </div>
 
-        {/* Game Canvas Container */}
-        <div className="relative mx-auto border-[14px] border-[#3a2a1f] rounded-[28px] shadow-2xl overflow-hidden bg-[#3a2a1f]" style={{ width: '1000px', height: '560px' }}>
-          <canvas
-            ref={canvasRef}
-            className="block"
-            style={{ imageRendering: 'pixelated' }}
-          />
-        </div>
-
-        {/* Instructions */}
-        <div className="flex justify-center gap-8 mt-5 text-sm text-amber-300/90">
-          <div className="flex items-center gap-2">
-            <span className="text-lg">👇</span>
-            <span>WASD veya Ok tuşları ile hareket et</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <span className="text-lg">🧑‍🍳</span>
-            <span>Müşterilere yaklaşınca otomatik servis!</span>
-          </div>
-        </div>
-
-        {/* Upgrade Shop */}
-        <div className="mt-7 grid grid-cols-1 md:grid-cols-3 gap-4 max-w-[1000px] mx-auto">
-          <button
-            onClick={() => buyUpgrade('speed')}
-            className="group flex flex-col items-start bg-gradient-to-br from-amber-600 to-amber-700 hover:from-amber-500 hover:to-amber-600 active:scale-[0.985] transition-all text-white rounded-3xl px-6 py-5 text-left shadow-lg border border-amber-900/40"
+        {/* 3D Canvas */}
+        <div className="relative mx-auto rounded-[28px] overflow-hidden border-[14px] border-[#3a2a1f] shadow-[0_25px_60px_rgb(0,0,0,0.6)]" 
+             style={{ width: '100%', maxWidth: '1180px', height: '620px' }}>
+          <Canvas
+            shadows
+            camera={{ position: [0, 11, 16], fov: 48 }}
+            style={{ background: '#2c2118' }}
           >
-            <div className="flex items-center gap-3">
-              <span className="text-3xl">⚡</span>
+            <ShopScene 
+              customers={customers} 
+              onServeCustomer={handleServe}
+              floatingTexts={floatingTexts}
+              serveRange={serveRange}
+            />
+          </Canvas>
+        </div>
+
+        <div className="text-center mt-3 text-amber-300/80 text-sm tracking-wider">
+          WASD ile dolaş • Müşterilere yaklaşınca otomatik servis olur • Para kazan → Upgrade al
+        </div>
+
+        {/* Upgrade Butonları */}
+        <div className="mt-6 grid grid-cols-2 md:grid-cols-4 gap-4 max-w-[1180px] mx-auto">
+          <button 
+            onClick={() => buyUpgrade('range')}
+            disabled={money < 180}
+            className="bg-gradient-to-br from-amber-600 to-amber-700 disabled:opacity-40 hover:brightness-110 active:scale-[0.985] transition-all text-left px-6 py-5 rounded-3xl border border-amber-900/50">
+            <div className="flex justify-between items-start">
               <div>
-                <div className="font-bold text-xl tracking-tight">Hızlı Fırın</div>
-                <div className="text-amber-200 text-sm">Müşteriler daha hızlı servis alır</div>
+                <div className="font-bold text-2xl tracking-tight">⚡ Servis Menzili</div>
+                <div className="text-amber-200 text-sm">Daha uzaktan servis yap</div>
               </div>
+              <div className="text-4xl font-mono tabular-nums tracking-tighter">180$</div>
             </div>
-            <div className="mt-auto pt-3 text-3xl font-mono font-semibold tabular-nums tracking-tighter">$150</div>
           </button>
 
-          <button
+          <button 
+            onClick={() => buyUpgrade('money')}
+            disabled={money < 320}
+            className="bg-gradient-to-br from-orange-600 to-orange-700 disabled:opacity-40 hover:brightness-110 active:scale-[0.985] transition-all text-left px-6 py-5 rounded-3xl border border-orange-900/50">
+            <div className="flex justify-between items-start">
+              <div>
+                <div className="font-bold text-2xl tracking-tight">💵 Daha Çok Para</div>
+                <div className="text-orange-200 text-sm">Her servisten daha fazla kazan</div>
+              </div>
+              <div className="text-4xl font-mono tabular-nums tracking-tighter">320$</div>
+            </div>
+          </button>
+
+          <button 
             onClick={() => buyUpgrade('spawn')}
-            className="group flex flex-col items-start bg-gradient-to-br from-orange-600 to-orange-700 hover:from-orange-500 hover:to-orange-600 active:scale-[0.985] transition-all text-white rounded-3xl px-6 py-5 text-left shadow-lg border border-orange-900/40"
-          >
-            <div className="flex items-center gap-3">
-              <span className="text-3xl">👥</span>
+            disabled={money < 260}
+            className="bg-gradient-to-br from-yellow-600 to-amber-700 disabled:opacity-40 hover:brightness-110 active:scale-[0.985] transition-all text-left px-6 py-5 rounded-3xl border border-yellow-900/50">
+            <div className="flex justify-between items-start">
               <div>
-                <div className="font-bold text-xl tracking-tight">Daha Fazla Müşteri</div>
-                <div className="text-orange-200 text-sm">Daha çok müşteri gelir</div>
+                <div className="font-bold text-2xl tracking-tight">👥 Daha Fazla Müşteri</div>
+                <div className="text-yellow-200 text-sm">Müşteriler daha sık gelir</div>
               </div>
+              <div className="text-4xl font-mono tabular-nums tracking-tighter">260$</div>
             </div>
-            <div className="mt-auto pt-3 text-3xl font-mono font-semibold tabular-nums tracking-tighter">$250</div>
           </button>
 
-          <button
-            onClick={() => buyUpgrade('multi')}
-            className="group flex flex-col items-start bg-gradient-to-br from-red-600 to-orange-700 hover:from-red-500 hover:to-orange-600 active:scale-[0.985] transition-all text-white rounded-3xl px-6 py-5 text-left shadow-lg border border-red-900/40"
-          >
-            <div className="flex items-center gap-3">
-              <span className="text-3xl">🔥</span>
+          <button 
+            onClick={() => buyUpgrade('speed')}
+            disabled={money < 210}
+            className="bg-gradient-to-br from-red-600 to-orange-700 disabled:opacity-40 hover:brightness-110 active:scale-[0.985] transition-all text-left px-6 py-5 rounded-3xl border border-red-900/50">
+            <div className="flex justify-between items-start">
               <div>
-                <div className="font-bold text-xl tracking-tight">Combo Bonus</div>
-                <div className="text-red-200 text-sm">Çok hızlı servis = x2 para</div>
+                <div className="font-bold text-2xl tracking-tight">🏃 Karakter Hızı</div>
+                <div className="text-red-200 text-sm">Daha hızlı dolaş</div>
               </div>
+              <div className="text-4xl font-mono tabular-nums tracking-tighter">210$</div>
             </div>
-            <div className="mt-auto pt-3 text-3xl font-mono font-semibold tabular-nums tracking-tighter">$400</div>
           </button>
         </div>
 
-        <p className="text-center text-[10px] text-amber-400/60 mt-6 tracking-[1px]">DONUT PLACE v1.0 — Her servis = 25$ • Combo ve upgrade'lerle para kazan!</p>
+        <p className="text-center text-[10px] text-amber-500/50 mt-7 tracking-[2px]">
+          DONUT PLACE 3D • Her servis = {moneyPerServe}$ • Menzil: {serveRange.toFixed(1)}m
+        </p>
       </div>
     </div>
   );
