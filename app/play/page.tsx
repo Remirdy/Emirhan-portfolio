@@ -2,7 +2,7 @@
 
 import React, { useRef, useState, useEffect, useCallback } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import { Html } from '@react-three/drei';
+import { Html, useGLTF } from '@react-three/drei';
 import * as THREE from 'three';
 
 interface Customer {
@@ -21,12 +21,16 @@ interface FloatingText {
   life: number;
 }
 
-// ==================== SOPHISTICATED PROFESSIONAL BAKER ====================
-function SophisticatedBaker({ characterSpeed }: { characterSpeed: number }) {
+// ==================== GLTF CHARACTER ====================
+function GLTFCharacter({ characterSpeed, modelPath = '/models/human.glb' }: { characterSpeed: number; modelPath?: string }) {
   const groupRef = useRef<THREE.Group>(null!);
+  const { scene } = useGLTF(modelPath);
   const { camera } = useThree();
   const keys = useRef<{ [key: string]: boolean }>({});
   const velocity = useRef(new THREE.Vector3());
+
+  // Clone the model so we can have multiple instances if needed
+  const model = React.useMemo(() => scene.clone(), [scene]);
 
   useEffect(() => {
     const down = (e: KeyboardEvent) => (keys.current[e.key.toLowerCase()] = true);
@@ -51,92 +55,38 @@ function SophisticatedBaker({ characterSpeed }: { characterSpeed: number }) {
     if (move.lengthSq() > 0.001) {
       move.normalize();
       const targetRot = Math.atan2(move.x, move.z);
-      groupRef.current.rotation.y = THREE.MathUtils.lerp(groupRef.current.rotation.y, targetRot, 0.22);
+      groupRef.current.rotation.y = THREE.MathUtils.lerp(groupRef.current.rotation.y, targetRot, 0.2);
 
-      velocity.current.lerp(move.multiplyScalar(characterSpeed), 0.18);
+      velocity.current.lerp(move.multiplyScalar(characterSpeed), 0.15);
     } else {
-      velocity.current.lerp(new THREE.Vector3(), 0.12);
+      velocity.current.lerp(new THREE.Vector3(), 0.1);
     }
 
-    groupRef.current.position.add(velocity.current.clone().multiplyScalar(delta * 52));
+    groupRef.current.position.add(velocity.current.clone().multiplyScalar(delta * 50));
 
+    // Bounds
     const p = groupRef.current.position;
     p.x = Math.max(-12, Math.min(12, p.x));
     p.z = Math.max(-8, Math.min(6, p.z));
     p.y = 0;
 
-    const camTarget = p.clone().add(new THREE.Vector3(0, 7.2, 10.8));
-    camera.position.lerp(camTarget, 0.07);
-    camera.lookAt(p.x, 3.5, p.z);
+    // Camera follow
+    const camTarget = p.clone().add(new THREE.Vector3(0, 6.5, 10));
+    camera.position.lerp(camTarget, 0.06);
+    camera.lookAt(p.x, 3.2, p.z);
 
-    const t = state.clock.elapsedTime * 11;
-    const bob = Math.sin(t) * 0.07;
-    groupRef.current.position.y = bob * 0.4 + 0.1;
-
-    const leftArm = groupRef.current.children.find((c: any) => c.userData?.name === 'leftArm') as THREE.Group | undefined;
-    const rightArm = groupRef.current.children.find((c: any) => c.userData?.name === 'rightArm') as THREE.Group | undefined;
-    if (leftArm) leftArm.rotation.x = Math.sin(t) * 1.35;
-    if (rightArm) rightArm.rotation.x = -Math.sin(t) * 1.35;
+    // Gentle bob
+    const bob = Math.sin(state.clock.elapsedTime * 10) * 0.06;
+    groupRef.current.position.y = bob * 0.3 + 0.05;
   });
 
   return (
     <group ref={groupRef}>
-      <mesh position={[0, 1.9, 0]} castShadow>
-        <capsuleGeometry args={[0.48, 1.2, 5]} />
-        <meshStandardMaterial color="#f8fafc" />
-      </mesh>
-      <mesh position={[0, 1.55, 0.38]} castShadow>
-        <boxGeometry args={[1.05, 1.35, 0.1]} />
-        <meshStandardMaterial color="#1e2937" />
-      </mesh>
-      <mesh position={[0, 3.7, 0]} castShadow>
-        <sphereGeometry args={[0.52]} />
-        <meshStandardMaterial color="#fcd34d" />
-      </mesh>
-      <mesh position={[0, 4.35, 0]}>
-        <cylinderGeometry args={[0.62, 0.78, 0.5, 32]} />
-        <meshStandardMaterial color="#ffffff" />
-      </mesh>
-      <mesh position={[0, 4.55, 0]}>
-        <sphereGeometry args={[0.5]} />
-        <meshStandardMaterial color="#f1f5f9" />
-      </mesh>
-      <mesh position={[-0.18, 3.82, 0.48]}>
-        <sphereGeometry args={[0.1]} />
-        <meshStandardMaterial color="#1e2937" />
-      </mesh>
-      <mesh position={[0.18, 3.82, 0.48]}>
-        <sphereGeometry args={[0.1]} />
-        <meshStandardMaterial color="#1e2937" />
-      </mesh>
-      <group position={[-0.72, 2.4, 0]} userData={{ name: 'leftArm' }}>
-        <mesh>
-          <capsuleGeometry args={[0.155, 0.8, 4]} />
-          <meshStandardMaterial color="#f8fafc" />
-        </mesh>
-        <mesh position={[0, -0.6, 0]}>
-          <sphereGeometry args={[0.18]} />
-          <meshStandardMaterial color="#fcd34d" />
-        </mesh>
-      </group>
-      <group position={[0.72, 2.4, 0]} userData={{ name: 'rightArm' }}>
-        <mesh>
-          <capsuleGeometry args={[0.155, 0.8, 4]} />
-          <meshStandardMaterial color="#f8fafc" />
-        </mesh>
-        <mesh position={[0, -0.6, 0]}>
-          <sphereGeometry args={[0.18]} />
-          <meshStandardMaterial color="#fcd34d" />
-        </mesh>
-      </group>
-      <mesh position={[-0.26, 0.72, 0]} castShadow>
-        <capsuleGeometry args={[0.18, 1.0, 4]} />
-        <meshStandardMaterial color="#334155" />
-      </mesh>
-      <mesh position={[0.26, 0.72, 0]} castShadow>
-        <capsuleGeometry args={[0.18, 1.0, 4]} />
-        <meshStandardMaterial color="#334155" />
-      </mesh>
+      <primitive 
+        object={model} 
+        scale={[0.9, 0.9, 0.9]} 
+        position={[0, 0, 0]} 
+      />
     </group>
   );
 }
@@ -157,7 +107,7 @@ function CustomerMesh({ customer }: { customer: Customer }) {
   );
 }
 
-// ==================== HIGH-END BAKERY PROPS ====================
+// ==================== BAKERY PROPS ====================
 function PremiumBakery() {
   return (
     <>
@@ -230,7 +180,7 @@ function Scene({ customers, floatingTexts, serveRange, onServe }: any) {
       <PremiumBakery />
 
       <group ref={charRef}>
-        <SophisticatedBaker characterSpeed={3.9} />
+        <GLTFCharacter characterSpeed={3.8} modelPath="/models/human.glb" />
       </group>
 
       {customers.map((c: Customer) => <CustomerMesh key={c.id} customer={c} />)}
@@ -250,7 +200,7 @@ function Scene({ customers, floatingTexts, serveRange, onServe }: any) {
   );
 }
 
-export default function DonutPlaceSophisticated() {
+export default function DonutPlaceGLTF() {
   const [money, setMoney] = useState(820);
   const [score, setScore] = useState(2150);
   const [level, setLevel] = useState(5);
@@ -341,7 +291,7 @@ export default function DonutPlaceSophisticated() {
             <span className="text-[74px] drop-shadow">🍩</span>
             <div>
               <div className="text-[60px] font-bold tracking-[-4.2px] text-amber-300">DONUT PLACE</div>
-              <div className="text-amber-400/60 text-xs tracking-[4px] -mt-2.5">PREMIUM SOPHISTICATED 3D</div>
+              <div className="text-amber-400/60 text-xs tracking-[4px] -mt-2.5">PREMIUM 3D • GLTF</div>
             </div>
           </div>
           <div className="flex items-center gap-6 text-[26px] font-mono">
@@ -382,10 +332,9 @@ export default function DonutPlaceSophisticated() {
         </div>
 
         <p className="text-center text-[10px] text-amber-500/50 mt-8 tracking-[1.5px]">
-          DONUT PLACE 3D • Premium Sophisticated Bakery • Her servis {moneyPerServe}$ • Menzil {serveRange.toFixed(1)}m
+          DONUT PLACE 3D • Using GLTF Character • Her servis {moneyPerServe}$ • Menzil {serveRange.toFixed(1)}m
         </p>
 
-        {/* KÜÇÜK KREDİ */}
         <p className="text-center text-[9px] text-amber-500/30 mt-3 tracking-[0.5px]">
           3D Character model by <a href="https://skfb.ly/6WPZD" target="_blank" className="underline hover:text-amber-400">Diana Liu</a> (CC BY 4.0)
         </p>
