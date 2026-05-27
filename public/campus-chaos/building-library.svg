@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="220" height="170" viewBox="0 0 220 170">
+  <rect width="220" height="170" rx="32" fill="#d8c7ff"/>
+  <ellipse cx="110" cy="142" rx="70" ry="14" fill="#111827" opacity="0.14"/>
+  <polygon points="36,82 110,28 184,82" fill="#6d54e8"/>
+  <rect x="45" y="78" width="130" height="58" rx="18" fill="#fbf8ff" stroke="#8f77df" stroke-width="4"/>
+  <rect x="66" y="92" width="24" height="34" rx="7" fill="#d8ccff"/>
+  <rect x="98" y="92" width="24" height="34" rx="7" fill="#d8ccff"/>
+  <rect x="130" y="92" width="24" height="34" rx="7" fill="#d8ccff"/>
+  <rect x="74" y="55" width="72" height="16" rx="8" fill="#5438ca"/>
+  <text x="110" y="67" font-family="Arial" font-size="12" font-weight="700" fill="#ffffff" text-anchor="middle">LIBRARY</text>
+</svg>
