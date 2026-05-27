@@ -9,10 +9,16 @@ export default function Navbar() {
   const links = [
     { href: '#about', label: 'Profile' },
     { href: '#projects', label: 'Dirty Birdy!' },
+    { href: '/play', label: 'Play' },
     { href: '#contact', label: 'Projects' },
   ]
 
-  const scrollTo = (href: string) => {
+  const navigateTo = (href: string) => {
+    if (href.startsWith('/')) {
+      window.location.href = href
+      return
+    }
+
     const element = document.querySelector(href)
     if (element) element.scrollIntoView({ behavior: 'smooth', block: 'start' })
     setIsOpen(false)
@@ -31,7 +37,7 @@ export default function Navbar() {
 
         <div className="hidden items-center gap-8 md:flex">
           {links.map((link) => (
-            <button key={link.href} onClick={() => scrollTo(link.href)} className="text-xs font-bold uppercase tracking-[0.28em] text-white/65 transition hover:text-cyan-200">
+            <button key={link.href} onClick={() => navigateTo(link.href)} className="text-xs font-bold uppercase tracking-[0.28em] text-white/65 transition hover:text-cyan-200">
               {link.label}
             </button>
           ))}
@@ -50,7 +56,7 @@ export default function Navbar() {
       {isOpen && (
         <div className="mt-4 grid gap-2 border-t border-cyan-300/10 pt-4 md:hidden">
           {links.map((link) => (
-            <button key={link.href} onClick={() => scrollTo(link.href)} className="rounded-xl px-3 py-3 text-left text-sm font-bold text-white/75 hover:bg-cyan-300/10">
+            <button key={link.href} onClick={() => navigateTo(link.href)} className="rounded-xl px-3 py-3 text-left text-sm font-bold text-white/75 hover:bg-cyan-300/10">
               {link.label}
             </button>
           ))}
