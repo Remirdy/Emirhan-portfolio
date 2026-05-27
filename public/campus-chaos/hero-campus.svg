@@ -1,0 +1,72 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="780" viewBox="0 0 1200 780" role="img" aria-labelledby="title desc">
+  <title id="title">Campus Chaos Tycoon campus illustration</title>
+  <desc id="desc">A colorful cartoon university campus map with canteen, copy center, library, students and event bubbles.</desc>
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#bdf4ff"/>
+      <stop offset="1" stop-color="#f7fff0"/>
+    </linearGradient>
+    <linearGradient id="grass" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#93f5a7"/>
+      <stop offset="1" stop-color="#35c87d"/>
+    </linearGradient>
+    <linearGradient id="road" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#ffe7a2"/>
+      <stop offset="1" stop-color="#ffc96b"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="18" stdDeviation="18" flood-color="#0f172a" flood-opacity="0.22"/>
+    </filter>
+  </defs>
+  <rect width="1200" height="780" rx="64" fill="url(#sky)"/>
+  <circle cx="980" cy="120" r="72" fill="#fff4a8" opacity="0.9"/>
+  <circle cx="160" cy="130" r="54" fill="#ffffff" opacity="0.55"/>
+  <circle cx="226" cy="120" r="36" fill="#ffffff" opacity="0.42"/>
+  <rect x="70" y="170" width="1060" height="520" rx="58" fill="url(#grass)" filter="url(#shadow)"/>
+  <path d="M592 690C592 600 592 514 592 420C592 354 606 277 622 194" stroke="url(#road)" stroke-width="74" stroke-linecap="round"/>
+  <path d="M150 438C330 408 460 424 592 420C734 416 876 380 1050 350" stroke="url(#road)" stroke-width="68" stroke-linecap="round"/>
+  <circle cx="596" cy="420" r="84" fill="#8df0a0" stroke="#fff0b3" stroke-width="22"/>
+  <circle cx="596" cy="420" r="38" fill="#3bc67e"/>
+
+  <g filter="url(#shadow)">
+    <g transform="translate(140 238)">
+      <rect x="0" y="54" width="250" height="160" rx="30" fill="#ffbd59"/>
+      <path d="M18 72L125 0L232 72Z" fill="#ff7a35"/>
+      <rect x="42" y="104" width="62" height="88" rx="12" fill="#fff7dd"/>
+      <rect x="130" y="100" width="76" height="48" rx="14" fill="#fff7dd"/>
+      <text x="125" y="232" text-anchor="middle" font-family="Inter,Arial" font-size="30" font-weight="900" fill="#6b2d00">CANTEEN</text>
+      <text x="125" y="128" text-anchor="middle" font-family="Arial" font-size="54">🍔</text>
+    </g>
+    <g transform="translate(785 210)">
+      <rect x="0" y="64" width="250" height="170" rx="30" fill="#70d6ff"/>
+      <path d="M22 82L125 6L228 82Z" fill="#2779ff"/>
+      <rect x="38" y="116" width="74" height="90" rx="14" fill="#effbff"/>
+      <rect x="138" y="118" width="74" height="52" rx="14" fill="#effbff"/>
+      <text x="125" y="254" text-anchor="middle" font-family="Inter,Arial" font-size="28" font-weight="900" fill="#074269">COPY CENTER</text>
+      <text x="125" y="148" text-anchor="middle" font-family="Arial" font-size="52">🖨️</text>
+    </g>
+    <g transform="translate(432 474)">
+      <rect x="0" y="46" width="310" height="150" rx="34" fill="#b49cff"/>
+      <path d="M24 64L155 0L286 64Z" fill="#7357ff"/>
+      <rect x="45" y="96" width="62" height="82" rx="12" fill="#f5f0ff"/>
+      <rect x="124" y="96" width="62" height="82" rx="12" fill="#f5f0ff"/>
+      <rect x="203" y="96" width="62" height="82" rx="12" fill="#f5f0ff"/>
+      <text x="155" y="216" text-anchor="middle" font-family="Inter,Arial" font-size="30" font-weight="900" fill="#2d216d">LIBRARY</text>
+      <text x="155" y="130" text-anchor="middle" font-family="Arial" font-size="54">📚</text>
+    </g>
+  </g>
+
+  <g font-family="Inter,Arial" font-weight="900">
+    <g transform="translate(240 500)"><circle r="22" fill="#fff"/><text y="8" text-anchor="middle" font-size="24">🎒</text></g>
+    <g transform="translate(522 300)"><circle r="22" fill="#fff"/><text y="8" text-anchor="middle" font-size="24">☕</text></g>
+    <g transform="translate(720 480)"><circle r="22" fill="#fff"/><text y="8" text-anchor="middle" font-size="24">🧑‍🎓</text></g>
+    <g transform="translate(900 420)"><circle r="22" fill="#fff"/><text y="8" text-anchor="middle" font-size="24">📓</text></g>
+  </g>
+
+  <g filter="url(#shadow)">
+    <rect x="430" y="120" width="330" height="88" rx="30" fill="#ff4f73"/>
+    <text x="472" y="157" font-family="Inter,Arial" font-size="18" font-weight="900" fill="#fff" letter-spacing="4">CAMPUS EVENT</text>
+    <text x="472" y="188" font-family="Inter,Arial" font-size="31" font-weight="900" fill="#fff">Printer Jam!</text>
+    <text x="718" y="177" font-family="Arial" font-size="44" text-anchor="middle">⚡</text>
+  </g>
+</svg>
