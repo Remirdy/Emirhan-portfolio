@@ -625,7 +625,7 @@ export default function DonutTycoon() {
   const [serveRange] = useState(5.0);
   const [baseDonutPrice, setBaseDonutPrice] = useState(45);
   const [spawnInterval, setSpawnInterval] = useState(2500);
-  const [playerSpeed, setPlayerSpeed] = useState(1.8);
+  const [playerSpeed, setPlayerSpeed] = useState(0.8);
   const [maxCustomers, setMaxCustomers] = useState(6);
   const [hasVipLounge, setHasVipLounge] = useState(false);
   const [hasDriveThru, setHasDriveThru] = useState(false);
@@ -788,7 +788,7 @@ export default function DonutTycoon() {
           setEmployees([]);
           setBaseDonutPrice(45);
           setSpawnInterval(2500);
-          setPlayerSpeed(1.8);
+          setPlayerSpeed(0.8);
           setMaxCustomers(6);
           setFeverMeter(0);
           setIsFever(false);
