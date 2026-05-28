@@ -101,143 +101,189 @@ function ProceduralCharacter({ position, scale = 1, color = '#facc15', isMoving 
   const leftArmRef = useRef<THREE.Group>(null!);
   const rightArmRef = useRef<THREE.Group>(null!);
   const bodyRef = useRef<THREE.Group>(null!);
+  const headRef = useRef<THREE.Group>(null!);
 
   useFrame((state) => {
-    if (groupRef.current) {
-      groupRef.current.position.copy(position);
-      // We handle rotation manually outside for smooth turn, but if passed down, just apply it
-      groupRef.current.rotation.y = rotationY;
+    if (!groupRef.current) return;
+    groupRef.current.position.copy(position);
+    groupRef.current.rotation.y = rotationY;
 
-      if (isMoving) {
-        const time = state.clock.elapsedTime * 10; // Slower, more realistic animation
-        // Bobbing
-        groupRef.current.position.y = position.y + Math.abs(Math.sin(time)) * 0.08;
-        
-        // Leg swing
-        if (leftLegRef.current && rightLegRef.current) {
-            leftLegRef.current.rotation.x = Math.sin(time) * 0.4;
-            rightLegRef.current.rotation.x = -Math.sin(time) * 0.4;
-        }
-        // Arm swing
-        if (leftArmRef.current && rightArmRef.current) {
-            leftArmRef.current.rotation.x = -Math.sin(time) * 0.4;
-            rightArmRef.current.rotation.x = Math.sin(time) * 0.4;
-        }
-        // Slight body tilt
-        if (bodyRef.current) bodyRef.current.rotation.z = Math.sin(time * 0.5) * 0.03;
-
-      } else {
-        // Idle
-        const time = state.clock.elapsedTime * 2;
-        groupRef.current.position.y = position.y + Math.sin(time) * 0.02;
-        
-        if (leftLegRef.current && rightLegRef.current) {
-            leftLegRef.current.rotation.x = THREE.MathUtils.lerp(leftLegRef.current.rotation.x, 0, 0.1);
-            rightLegRef.current.rotation.x = THREE.MathUtils.lerp(rightLegRef.current.rotation.x, 0, 0.1);
-        }
-        if (leftArmRef.current && rightArmRef.current) {
-            leftArmRef.current.rotation.x = THREE.MathUtils.lerp(leftArmRef.current.rotation.x, 0, 0.1);
-            rightArmRef.current.rotation.x = THREE.MathUtils.lerp(rightArmRef.current.rotation.x, 0, 0.1);
-        }
-        if (bodyRef.current) bodyRef.current.rotation.z = THREE.MathUtils.lerp(bodyRef.current.rotation.z, 0, 0.1);
+    if (isMoving) {
+      const time = state.clock.elapsedTime * 10;
+      groupRef.current.position.y = position.y + Math.abs(Math.sin(time)) * 0.08;
+      if (leftLegRef.current && rightLegRef.current) {
+        leftLegRef.current.rotation.x = Math.sin(time) * 0.45;
+        rightLegRef.current.rotation.x = -Math.sin(time) * 0.45;
       }
+      if (leftArmRef.current && rightArmRef.current) {
+        leftArmRef.current.rotation.x = -Math.sin(time) * 0.45;
+        rightArmRef.current.rotation.x = Math.sin(time) * 0.45;
+      }
+      if (bodyRef.current) bodyRef.current.rotation.z = Math.sin(time * 0.5) * 0.03;
+      if (headRef.current) headRef.current.rotation.z = Math.sin(time) * 0.05;
+    } else {
+      const time = state.clock.elapsedTime * 2;
+      groupRef.current.position.y = position.y + Math.sin(time) * 0.02;
+      if (leftLegRef.current && rightLegRef.current) {
+        leftLegRef.current.rotation.x = THREE.MathUtils.lerp(leftLegRef.current.rotation.x, 0, 0.1);
+        rightLegRef.current.rotation.x = THREE.MathUtils.lerp(rightLegRef.current.rotation.x, 0, 0.1);
+      }
+      if (leftArmRef.current && rightArmRef.current) {
+        leftArmRef.current.rotation.x = THREE.MathUtils.lerp(leftArmRef.current.rotation.x, 0, 0.1);
+        rightArmRef.current.rotation.x = THREE.MathUtils.lerp(rightArmRef.current.rotation.x, 0, 0.1);
+      }
+      if (bodyRef.current) bodyRef.current.rotation.z = THREE.MathUtils.lerp(bodyRef.current.rotation.z, 0, 0.1);
+      if (headRef.current) headRef.current.rotation.z = THREE.MathUtils.lerp(headRef.current.rotation.z, Math.sin(time) * 0.04, 0.1);
     }
   });
 
-  // Clothing colors based on type
-  let shirtColor = '#ffffff';
-  let pantsColor = '#3b82f6'; // Jeans
-  const skinColor = '#fcd34d'; // Skin tone
-  
+  // ---- palette ----
+  let shirtColor = '#e2e8f0';
+  let pantsColor = '#334155';
+  let hairColor = '#3b2a20';
+  const skinColor = '#f1c27d';
+  let accent = '#0ea5e9';
+
   if (type === 'player') {
-      shirtColor = '#fbbf24'; // Yellow
-      pantsColor = '#1f2937';
+    shirtColor = '#fbbf24'; pantsColor = '#1f2937'; hairColor = '#1f1410'; accent = '#f59e0b';
   } else if (type === 'cashier') {
-      shirtColor = '#3b82f6'; // Blue
-      pantsColor = '#1e3a8a';
+    shirtColor = '#2563eb'; pantsColor = '#1e3a8a'; hairColor = '#2b2b2b'; accent = '#60a5fa';
   } else if (type === 'waiter') {
-      shirtColor = '#8b5cf6'; // Purple
-      pantsColor = '#111827';
+    shirtColor = '#6d28d9'; pantsColor = '#111827'; hairColor = '#241a12'; accent = '#a78bfa';
   } else if (type === 'baker') {
-      shirtColor = '#ec4899'; // Pink
-      pantsColor = '#e5e7eb'; // Apron-like
+    shirtColor = '#f8fafc'; pantsColor = '#cbd5e1'; hairColor = '#3b2a20'; accent = '#ec4899';
   } else {
-      // Customers
-      shirtColor = color || '#a8a29e';
+    // customers keep mood-driven shirt color (gameplay readability)
+    shirtColor = color || '#94a3b8';
   }
 
+  const Skin = <meshStandardMaterial color={skinColor} roughness={0.65} />;
+
   return (
-    <group ref={groupRef} scale={[scale, scale, scale]}>
-      {/* Head */}
-      <mesh position={[0, 1.6, 0]} castShadow>
-        <boxGeometry args={[0.5, 0.5, 0.5]} />
-        <meshStandardMaterial color={skinColor} roughness={0.6} />
-      </mesh>
-      
-      {/* Body Group */}
-      <group ref={bodyRef} position={[0, 1.0, 0]}>
-        <mesh castShadow>
-          <boxGeometry args={[0.6, 0.7, 0.35]} />
-          <meshStandardMaterial color={shirtColor} roughness={0.8} />
+    <group ref={groupRef} scale={[scale, scale, scale]} rotation={[0, rotationY, 0]}>
+      {/* ===== HEAD ===== */}
+      <group ref={headRef} position={[0, 1.62, 0]}>
+        {/* skull */}
+        <mesh castShadow scale={[1, 1.08, 0.96]}>
+          <sphereGeometry args={[0.27, 24, 24]} />
+          {Skin}
         </mesh>
-        
-        {/* Left Arm Group */}
-        <group ref={leftArmRef} position={[-0.4, 0.25, 0]}>
-          <mesh position={[0, -0.25, 0]} castShadow>
-            <boxGeometry args={[0.18, 0.5, 0.18]} />
-            <meshStandardMaterial color={shirtColor} />
+        {/* hair cap (not baker, who wears a toque) */}
+        {type !== 'baker' && (
+          <mesh position={[0, 0.1, -0.02]} scale={[1.08, 0.78, 1.08]} castShadow>
+            <sphereGeometry args={[0.27, 20, 20, 0, Math.PI * 2, 0, Math.PI * 0.62]} />
+            <meshStandardMaterial color={hairColor} roughness={0.85} />
           </mesh>
-          <mesh position={[0, -0.55, 0]} castShadow>
-            <boxGeometry args={[0.15, 0.15, 0.15]} />
-            <meshStandardMaterial color={skinColor} />
+        )}
+        {/* eyes */}
+        <mesh position={[-0.1, 0.0, 0.245]}><sphereGeometry args={[0.045, 12, 12]} /><meshStandardMaterial color="#1e293b" roughness={0.3} /></mesh>
+        <mesh position={[0.1, 0.0, 0.245]}><sphereGeometry args={[0.045, 12, 12]} /><meshStandardMaterial color="#1e293b" roughness={0.3} /></mesh>
+        {/* eye highlights */}
+        <mesh position={[-0.085, 0.02, 0.275]}><sphereGeometry args={[0.015, 8, 8]} /><meshStandardMaterial color="#ffffff" emissive="#ffffff" emissiveIntensity={0.4} /></mesh>
+        <mesh position={[0.115, 0.02, 0.275]}><sphereGeometry args={[0.015, 8, 8]} /><meshStandardMaterial color="#ffffff" emissive="#ffffff" emissiveIntensity={0.4} /></mesh>
+        {/* neck */}
+        <mesh position={[0, -0.28, 0]}><cylinderGeometry args={[0.1, 0.12, 0.18, 12]} />{Skin}</mesh>
+
+        {/* role headwear */}
+        {type === 'baker' && (
+          <group position={[0, 0.22, 0]}>
+            <mesh castShadow><cylinderGeometry args={[0.26, 0.28, 0.22, 20]} /><meshStandardMaterial color="#ffffff" roughness={0.9} /></mesh>
+            <mesh position={[0, 0.2, 0]} castShadow><sphereGeometry args={[0.3, 18, 18]} /><meshStandardMaterial color="#ffffff" roughness={0.95} /></mesh>
+          </group>
+        )}
+        {type === 'cashier' && (
+          <group position={[0, 0.22, 0]}>
+            <mesh castShadow><cylinderGeometry args={[0.29, 0.29, 0.12, 20]} /><meshStandardMaterial color={accent} roughness={0.6} /></mesh>
+            <mesh position={[0, 0.07, 0]}><sphereGeometry args={[0.27, 18, 18, 0, Math.PI * 2, 0, Math.PI * 0.5]} /><meshStandardMaterial color="#1d4ed8" roughness={0.6} /></mesh>
+            {/* visor */}
+            <mesh position={[0, -0.02, 0.26]} rotation={[0.2, 0, 0]} castShadow><boxGeometry args={[0.34, 0.05, 0.22]} /><meshStandardMaterial color="#1d4ed8" /></mesh>
+          </group>
+        )}
+        {type === 'player' && (
+          <group position={[0, 0.2, 0]}>
+            <mesh position={[0, 0.05, 0]}><sphereGeometry args={[0.28, 18, 18, 0, Math.PI * 2, 0, Math.PI * 0.5]} /><meshStandardMaterial color={accent} roughness={0.5} /></mesh>
+            {/* cap visor flipped back */}
+            <mesh position={[0, -0.04, -0.27]} rotation={[-0.25, 0, 0]} castShadow><boxGeometry args={[0.32, 0.05, 0.2]} /><meshStandardMaterial color="#92400e" /></mesh>
+          </group>
+        )}
+      </group>
+
+      {/* ===== TORSO ===== */}
+      <group ref={bodyRef} position={[0, 1.02, 0]}>
+        <mesh castShadow scale={[1, 1, 0.7]}>
+          <capsuleGeometry args={[0.3, 0.34, 6, 16]} />
+          <meshStandardMaterial color={shirtColor} roughness={0.78} />
+        </mesh>
+        {/* shoulders */}
+        <mesh position={[0, 0.26, 0]} scale={[1.25, 0.5, 0.7]} castShadow>
+          <sphereGeometry args={[0.3, 16, 16]} />
+          <meshStandardMaterial color={shirtColor} roughness={0.78} />
+        </mesh>
+
+        {/* baker apron */}
+        {type === 'baker' && (
+          <mesh position={[0, -0.05, 0.21]} castShadow>
+            <boxGeometry args={[0.42, 0.6, 0.06]} />
+            <meshStandardMaterial color="#e2725b" roughness={0.85} />
           </mesh>
+        )}
+        {/* waiter bowtie + vest lapels */}
+        {type === 'waiter' && (
+          <>
+            <mesh position={[0, 0.26, 0.2]}><boxGeometry args={[0.16, 0.07, 0.05]} /><meshStandardMaterial color="#0f172a" /></mesh>
+            <mesh position={[0, 0.0, 0.2]} scale={[0.5, 1, 1]}><boxGeometry args={[0.5, 0.55, 0.04]} /><meshStandardMaterial color="#0f172a" roughness={0.7} /></mesh>
+          </>
+        )}
+        {/* cashier name badge */}
+        {type === 'cashier' && (
+          <mesh position={[0.16, 0.05, 0.21]}><boxGeometry args={[0.12, 0.06, 0.02]} /><meshStandardMaterial color={accent} emissive={accent} emissiveIntensity={0.5} /></mesh>
+        )}
+
+        {/* ===== ARMS ===== */}
+        <group ref={leftArmRef} position={[-0.36, 0.2, 0]}>
+          <mesh position={[0, -0.22, 0]} castShadow>
+            <capsuleGeometry args={[0.09, 0.3, 4, 10]} />
+            <meshStandardMaterial color={shirtColor} roughness={0.78} />
+          </mesh>
+          <mesh position={[0, -0.46, 0]} castShadow><sphereGeometry args={[0.1, 12, 12]} />{Skin}</mesh>
         </group>
-
-        {/* Right Arm Group */}
-        <group ref={rightArmRef} position={[0.4, 0.25, 0]}>
-          <mesh position={[0, -0.25, 0]} castShadow>
-            <boxGeometry args={[0.18, 0.5, 0.18]} />
-            <meshStandardMaterial color={shirtColor} />
+        <group ref={rightArmRef} position={[0.36, 0.2, 0]}>
+          <mesh position={[0, -0.22, 0]} castShadow>
+            <capsuleGeometry args={[0.09, 0.3, 4, 10]} />
+            <meshStandardMaterial color={shirtColor} roughness={0.78} />
           </mesh>
-          <mesh position={[0, -0.55, 0]} castShadow>
-            <boxGeometry args={[0.15, 0.15, 0.15]} />
-            <meshStandardMaterial color={skinColor} />
-          </mesh>
+          <mesh position={[0, -0.46, 0]} castShadow><sphereGeometry args={[0.1, 12, 12]} />{Skin}</mesh>
         </group>
       </group>
 
-      {/* Left Leg Group */}
-      <group ref={leftLegRef} position={[-0.18, 0.65, 0]}>
-        <mesh position={[0, -0.25, 0]} castShadow>
-          <boxGeometry args={[0.22, 0.5, 0.22]} />
-          <meshStandardMaterial color={pantsColor} />
+      {/* ===== LEGS ===== */}
+      <group ref={leftLegRef} position={[-0.15, 0.66, 0]}>
+        <mesh position={[0, -0.26, 0]} castShadow>
+          <capsuleGeometry args={[0.11, 0.32, 4, 10]} />
+          <meshStandardMaterial color={pantsColor} roughness={0.8} />
         </mesh>
-        {/* Shoe */}
-        <mesh position={[0, -0.55, 0.05]} castShadow>
-          <boxGeometry args={[0.24, 0.15, 0.3]} />
-          <meshStandardMaterial color="#111" />
+        <mesh position={[0, -0.52, 0.06]} castShadow>
+          <boxGeometry args={[0.2, 0.13, 0.32]} />
+          <meshStandardMaterial color="#0f172a" roughness={0.4} metalness={0.2} />
+        </mesh>
+      </group>
+      <group ref={rightLegRef} position={[0.15, 0.66, 0]}>
+        <mesh position={[0, -0.26, 0]} castShadow>
+          <capsuleGeometry args={[0.11, 0.32, 4, 10]} />
+          <meshStandardMaterial color={pantsColor} roughness={0.8} />
+        </mesh>
+        <mesh position={[0, -0.52, 0.06]} castShadow>
+          <boxGeometry args={[0.2, 0.13, 0.32]} />
+          <meshStandardMaterial color="#0f172a" roughness={0.4} metalness={0.2} />
         </mesh>
       </group>
 
-      {/* Right Leg Group */}
-      <group ref={rightLegRef} position={[0.18, 0.65, 0]}>
-        <mesh position={[0, -0.25, 0]} castShadow>
-          <boxGeometry args={[0.22, 0.5, 0.22]} />
-          <meshStandardMaterial color={pantsColor} />
-        </mesh>
-        {/* Shoe */}
-        <mesh position={[0, -0.55, 0.05]} castShadow>
-          <boxGeometry args={[0.24, 0.15, 0.3]} />
-          <meshStandardMaterial color="#111" />
-        </mesh>
-      </group>
-
-      {/* Mood/Role Indicator */}
-      {type !== 'player' && color && type === 'customer' && (
-        <mesh position={[0, 2.1, 0]}>
-          <coneGeometry args={[0.12, 0.25, 4]} />
-          <meshStandardMaterial color={color} emissive={color} emissiveIntensity={0.5} />
-        </mesh>
+      {/* ===== CUSTOMER MOOD INDICATOR ===== */}
+      {type === 'customer' && color && (
+        <group position={[0, 2.25, 0]}>
+          <mesh><icosahedronGeometry args={[0.14, 0]} /><meshStandardMaterial color={color} emissive={color} emissiveIntensity={0.9} toneMapped={false} /></mesh>
+          <mesh position={[0, -0.16, 0]} rotation={[Math.PI, 0, 0]}><coneGeometry args={[0.07, 0.14, 4]} /><meshStandardMaterial color={color} emissive={color} emissiveIntensity={0.7} toneMapped={false} /></mesh>
+        </group>
       )}
     </group>
   );
