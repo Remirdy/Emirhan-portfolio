@@ -96,49 +96,50 @@ function Particles({ count = 50, color = "#fbbf24", isPlaying = false, position 
 // ==================== PROCEDURAL CHARACTER ====================
 function ProceduralCharacter({ position, scale = 1, color = '#facc15', isMoving = false, type = 'customer', rotationY = 0 }: { position: THREE.Vector3, scale?: number, color?: string | null, isMoving?: boolean, type?: string, rotationY?: number }) {
   const groupRef = useRef<THREE.Group>(null!);
-  const leftLegRef = useRef<THREE.Mesh>(null!);
-  const rightLegRef = useRef<THREE.Mesh>(null!);
-  const leftArmRef = useRef<THREE.Mesh>(null!);
-  const rightArmRef = useRef<THREE.Mesh>(null!);
-  const bodyRef = useRef<THREE.Mesh>(null!);
+  const leftLegRef = useRef<THREE.Group>(null!);
+  const rightLegRef = useRef<THREE.Group>(null!);
+  const leftArmRef = useRef<THREE.Group>(null!);
+  const rightArmRef = useRef<THREE.Group>(null!);
+  const bodyRef = useRef<THREE.Group>(null!);
 
   useFrame((state) => {
     if (groupRef.current) {
       groupRef.current.position.copy(position);
+      // We handle rotation manually outside for smooth turn, but if passed down, just apply it
       groupRef.current.rotation.y = rotationY;
 
       if (isMoving) {
-        const time = state.clock.elapsedTime * 15;
+        const time = state.clock.elapsedTime * 10; // Slower, more realistic animation
         // Bobbing
-        groupRef.current.position.y = position.y + Math.abs(Math.sin(time)) * 0.1;
+        groupRef.current.position.y = position.y + Math.abs(Math.sin(time)) * 0.08;
         
         // Leg swing
         if (leftLegRef.current && rightLegRef.current) {
-            leftLegRef.current.rotation.x = Math.sin(time) * 0.5;
-            rightLegRef.current.rotation.x = -Math.sin(time) * 0.5;
+            leftLegRef.current.rotation.x = Math.sin(time) * 0.4;
+            rightLegRef.current.rotation.x = -Math.sin(time) * 0.4;
         }
         // Arm swing
         if (leftArmRef.current && rightArmRef.current) {
-            leftArmRef.current.rotation.x = -Math.sin(time) * 0.5;
-            rightArmRef.current.rotation.x = Math.sin(time) * 0.5;
+            leftArmRef.current.rotation.x = -Math.sin(time) * 0.4;
+            rightArmRef.current.rotation.x = Math.sin(time) * 0.4;
         }
         // Slight body tilt
-        if (bodyRef.current) bodyRef.current.rotation.z = Math.sin(time * 0.5) * 0.05;
+        if (bodyRef.current) bodyRef.current.rotation.z = Math.sin(time * 0.5) * 0.03;
 
       } else {
         // Idle
         const time = state.clock.elapsedTime * 2;
-        groupRef.current.position.y = position.y + Math.sin(time) * 0.03;
+        groupRef.current.position.y = position.y + Math.sin(time) * 0.02;
         
         if (leftLegRef.current && rightLegRef.current) {
-            leftLegRef.current.rotation.x = 0;
-            rightLegRef.current.rotation.x = 0;
+            leftLegRef.current.rotation.x = THREE.MathUtils.lerp(leftLegRef.current.rotation.x, 0, 0.1);
+            rightLegRef.current.rotation.x = THREE.MathUtils.lerp(rightLegRef.current.rotation.x, 0, 0.1);
         }
         if (leftArmRef.current && rightArmRef.current) {
-            leftArmRef.current.rotation.x = 0;
-            rightArmRef.current.rotation.x = 0;
+            leftArmRef.current.rotation.x = THREE.MathUtils.lerp(leftArmRef.current.rotation.x, 0, 0.1);
+            rightArmRef.current.rotation.x = THREE.MathUtils.lerp(rightArmRef.current.rotation.x, 0, 0.1);
         }
-        if (bodyRef.current) bodyRef.current.rotation.z = 0;
+        if (bodyRef.current) bodyRef.current.rotation.z = THREE.MathUtils.lerp(bodyRef.current.rotation.z, 0, 0.1);
       }
     }
   });
@@ -146,10 +147,11 @@ function ProceduralCharacter({ position, scale = 1, color = '#facc15', isMoving 
   // Clothing colors based on type
   let shirtColor = '#ffffff';
   let pantsColor = '#3b82f6'; // Jeans
+  const skinColor = '#fcd34d'; // Skin tone
   
   if (type === 'player') {
       shirtColor = '#fbbf24'; // Yellow
-      pantsColor = '#000000';
+      pantsColor = '#1f2937';
   } else if (type === 'cashier') {
       shirtColor = '#3b82f6'; // Blue
       pantsColor = '#1e3a8a';
@@ -158,7 +160,7 @@ function ProceduralCharacter({ position, scale = 1, color = '#facc15', isMoving 
       pantsColor = '#111827';
   } else if (type === 'baker') {
       shirtColor = '#ec4899'; // Pink
-      pantsColor = '#ffffff'; // Apron-like
+      pantsColor = '#e5e7eb'; // Apron-like
   } else {
       // Customers
       shirtColor = color || '#a8a29e';
@@ -168,45 +170,73 @@ function ProceduralCharacter({ position, scale = 1, color = '#facc15', isMoving 
     <group ref={groupRef} scale={[scale, scale, scale]}>
       {/* Head */}
       <mesh position={[0, 1.6, 0]} castShadow>
-        <boxGeometry args={[0.6, 0.6, 0.6]} />
-        <meshStandardMaterial color="#fcd34d" />
+        <boxGeometry args={[0.5, 0.5, 0.5]} />
+        <meshStandardMaterial color={skinColor} roughness={0.6} />
       </mesh>
       
-      {/* Body */}
-      <mesh ref={bodyRef} position={[0, 0.9, 0]} castShadow>
-        <boxGeometry args={[0.7, 0.8, 0.4]} />
-        <meshStandardMaterial color={shirtColor} />
-      </mesh>
+      {/* Body Group */}
+      <group ref={bodyRef} position={[0, 1.0, 0]}>
+        <mesh castShadow>
+          <boxGeometry args={[0.6, 0.7, 0.35]} />
+          <meshStandardMaterial color={shirtColor} roughness={0.8} />
+        </mesh>
+        
+        {/* Left Arm Group */}
+        <group ref={leftArmRef} position={[-0.4, 0.25, 0]}>
+          <mesh position={[0, -0.25, 0]} castShadow>
+            <boxGeometry args={[0.18, 0.5, 0.18]} />
+            <meshStandardMaterial color={shirtColor} />
+          </mesh>
+          <mesh position={[0, -0.55, 0]} castShadow>
+            <boxGeometry args={[0.15, 0.15, 0.15]} />
+            <meshStandardMaterial color={skinColor} />
+          </mesh>
+        </group>
 
-      {/* Left Arm */}
-      <mesh ref={leftArmRef} position={[-0.45, 1.1, 0]} castShadow>
-        <boxGeometry args={[0.2, 0.6, 0.2]} />
-        <meshStandardMaterial color={shirtColor} />
-      </mesh>
+        {/* Right Arm Group */}
+        <group ref={rightArmRef} position={[0.4, 0.25, 0]}>
+          <mesh position={[0, -0.25, 0]} castShadow>
+            <boxGeometry args={[0.18, 0.5, 0.18]} />
+            <meshStandardMaterial color={shirtColor} />
+          </mesh>
+          <mesh position={[0, -0.55, 0]} castShadow>
+            <boxGeometry args={[0.15, 0.15, 0.15]} />
+            <meshStandardMaterial color={skinColor} />
+          </mesh>
+        </group>
+      </group>
 
-      {/* Right Arm */}
-      <mesh ref={rightArmRef} position={[0.45, 1.1, 0]} castShadow>
-        <boxGeometry args={[0.2, 0.6, 0.2]} />
-        <meshStandardMaterial color={shirtColor} />
-      </mesh>
+      {/* Left Leg Group */}
+      <group ref={leftLegRef} position={[-0.18, 0.65, 0]}>
+        <mesh position={[0, -0.25, 0]} castShadow>
+          <boxGeometry args={[0.22, 0.5, 0.22]} />
+          <meshStandardMaterial color={pantsColor} />
+        </mesh>
+        {/* Shoe */}
+        <mesh position={[0, -0.55, 0.05]} castShadow>
+          <boxGeometry args={[0.24, 0.15, 0.3]} />
+          <meshStandardMaterial color="#111" />
+        </mesh>
+      </group>
 
-      {/* Left Leg */}
-      <mesh ref={leftLegRef} position={[-0.2, 0.3, 0]} castShadow>
-        <boxGeometry args={[0.25, 0.6, 0.25]} />
-        <meshStandardMaterial color={pantsColor} />
-      </mesh>
-
-      {/* Right Leg */}
-      <mesh ref={rightLegRef} position={[0.2, 0.3, 0]} castShadow>
-        <boxGeometry args={[0.25, 0.6, 0.25]} />
-        <meshStandardMaterial color={pantsColor} />
-      </mesh>
+      {/* Right Leg Group */}
+      <group ref={rightLegRef} position={[0.18, 0.65, 0]}>
+        <mesh position={[0, -0.25, 0]} castShadow>
+          <boxGeometry args={[0.22, 0.5, 0.22]} />
+          <meshStandardMaterial color={pantsColor} />
+        </mesh>
+        {/* Shoe */}
+        <mesh position={[0, -0.55, 0.05]} castShadow>
+          <boxGeometry args={[0.24, 0.15, 0.3]} />
+          <meshStandardMaterial color="#111" />
+        </mesh>
+      </group>
 
       {/* Mood/Role Indicator */}
       {type !== 'player' && color && type === 'customer' && (
-        <mesh position={[0, 2.2, 0]}>
-          <coneGeometry args={[0.15, 0.3, 4]} />
-          <meshStandardMaterial color={color} />
+        <mesh position={[0, 2.1, 0]}>
+          <coneGeometry args={[0.12, 0.25, 4]} />
+          <meshStandardMaterial color={color} emissive={color} emissiveIntensity={0.5} />
         </mesh>
       )}
     </group>
@@ -247,7 +277,7 @@ function PlayerCharacter({ characterSpeed, customers, serveRange, onServe, isFev
     if (keys.current['a'] || keys.current['arrowleft']) move.x -= 1;
     if (keys.current['d'] || keys.current['arrowright']) move.x += 1;
 
-    const actualSpeed = isFever ? characterSpeed * 2.5 : characterSpeed;
+    const actualSpeed = isFever ? characterSpeed * 1.5 : characterSpeed;
     const moving = move.lengthSq() > 0.001;
     
     if (moving !== isMoving) setIsMoving(moving);
@@ -261,12 +291,24 @@ function PlayerCharacter({ characterSpeed, customers, serveRange, onServe, isFev
       velocity.current.lerp(new THREE.Vector3(), 0.1);
     }
 
-    groupRef.current.position.add(velocity.current.clone().multiplyScalar(delta * 50));
+    const proposedPos = groupRef.current.position.clone().add(velocity.current.clone().multiplyScalar(delta * 50));
+    let hit = false;
+    
+    // Counter Collision (approx x: -9 to 9, z: -10 to -6)
+    if (proposedPos.x > -9.5 && proposedPos.x < 9.5 && proposedPos.z < -6.5 && proposedPos.z > -10.5) hit = true;
+    
+    // Tables Collision (x: ~ -8 and 8, z: ~ 5)
+    if (Math.abs(proposedPos.x - (-8)) < 2.5 && Math.abs(proposedPos.z - 5) < 2.5) hit = true;
+    if (Math.abs(proposedPos.x - (8)) < 2.5 && Math.abs(proposedPos.z - 5) < 2.5) hit = true;
 
-    // Bounds
+    if (!hit) {
+       groupRef.current.position.copy(proposedPos);
+    }
+
+    // World Bounds
     const p = groupRef.current.position;
     p.x = Math.max(-14, Math.min(14, p.x));
-    p.z = Math.max(-9, Math.min(8, p.z));
+    p.z = Math.max(-10, Math.min(9, p.z));
     p.y = 0;
 
     checkServe(p);
@@ -789,7 +831,8 @@ export default function DonutTycoon() {
 
           const dist = c.position.distanceTo(c.target);
           
-          if (c.state === 'walking' && dist < 0.5) {
+          // Using a looser distance check to prevent them from getting stuck spinning around target
+          if (c.state === 'walking' && dist < 1.0) {
             return { ...c, state: 'waiting', waitTime: now + 5000 + Math.random() * 5000, moodTimer: now };
           }
           
