@@ -2,6 +2,9 @@ import type { Metadata } from 'next'
 import { Inter, Space_Grotesk } from 'next/font/google'
 import './globals.css'
 import Navbar from '@/components/Navbar'
+import ScrollProgress from '@/components/fx/ScrollProgress'
+import CustomCursor from '@/components/fx/CustomCursor'
+import AuroraBackground from '@/components/fx/AuroraBackground'
 
 const inter = Inter({ 
   subsets: ['latin'], 
@@ -31,6 +34,10 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${inter.variable} ${spaceGrotesk.variable}`}>
       <body className="bg-[#050505] text-white antialiased">
+        <div className="fx-aurora" aria-hidden />
+        <AuroraBackground />
+        <ScrollProgress />
+        <CustomCursor />
         <Navbar />
         {children}
       </body>
