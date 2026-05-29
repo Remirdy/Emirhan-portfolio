@@ -1,0 +1,1224 @@
+.wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  perspective: 1000px;
+}
+
+/* Phone Bezel/Chassis */
+.phoneShell {
+  position: relative;
+  width: 360px;
+  height: 720px;
+  background: #111;
+  border-radius: 46px;
+  padding: 11px;
+  box-shadow: 
+    0 25px 50px -12px rgba(0, 0, 0, 0.7),
+    0 0 0 6px #222,
+    0 0 0 7px #2c2c2c,
+    inset 0 0 10px rgba(0, 0, 0, 0.8),
+    inset 0 2px 4px rgba(255, 255, 255, 0.2);
+  user-select: none;
+  transform: rotateX(2deg) rotateY(-2deg) rotateZ(0deg);
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.6s ease;
+}
+
+.phoneShell:hover {
+  transform: rotateX(0deg) rotateY(0deg) rotateZ(0deg) translateY(-8px);
+  box-shadow: 
+    0 35px 65px -10px rgba(0, 234, 255, 0.15),
+    0 0 0 6px #282828,
+    0 0 0 7px #383838,
+    inset 0 0 10px rgba(0, 0, 0, 0.8),
+    inset 0 2px 4px rgba(255, 255, 255, 0.3);
+}
+
+/* Top Speaker Ear-piece */
+.speaker {
+  position: absolute;
+  top: 6px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 50px;
+  height: 4px;
+  background: #252525;
+  border-radius: 2px;
+  z-index: 50;
+}
+
+/* Side Buttons Hardware */
+.leftButtons {
+  position: absolute;
+  left: -7px;
+  top: 130px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.btnVolumeUp, .btnVolumeDown {
+  width: 3px;
+  height: 50px;
+  background: #3a3a3a;
+  border-radius: 3px 0 0 3px;
+}
+
+.rightButton {
+  position: absolute;
+  right: -7px;
+  top: 170px;
+  width: 3px;
+  height: 75px;
+  background: #3a3a3a;
+  border-radius: 0 3px 3px 0;
+}
+
+/* Phone Screen Body */
+.screen {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background: #060907;
+  border-radius: 36px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow: inset 0 0 15px rgba(0,0,0,0.9);
+  border: 1px solid rgba(255,255,255,0.03);
+}
+
+/* Glass shine overlay */
+.reflection {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0) 45%, rgba(255, 255, 255, 0) 100%);
+  z-index: 99;
+  pointer-events: none;
+  border-radius: 36px;
+}
+
+/* Dynamic Island */
+.dynamicIsland {
+  position: absolute;
+  top: 11px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 90px;
+  height: 25px;
+  background: #000;
+  border-radius: 20px;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+  transition: width 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), height 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), border-radius 0.4s ease;
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.islandActive {
+  width: 170px;
+  height: 36px;
+  background: #080a09;
+  border: 1px solid rgba(52, 211, 153, 0.3);
+  border-radius: 22px;
+}
+
+.cameraLens {
+  width: 8px;
+  height: 8px;
+  background: #111;
+  border-radius: 50%;
+  box-shadow: inset 0 0 3px rgba(52, 211, 153, 0.4);
+  margin-left: 24px;
+}
+
+.islandContent {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 14px;
+  color: #fff;
+  font-size: 11px;
+}
+
+.islandIcon {
+  font-size: 12px;
+  animation: pulseIcon 1.5s ease-in-out infinite;
+}
+
+.islandTimer {
+  font-family: monospace;
+  font-weight: 800;
+  color: #34d399;
+  letter-spacing: 0.5px;
+}
+
+/* Status Bar */
+.statusBar {
+  height: 38px;
+  padding: 0 24px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  font-size: 11px;
+  font-weight: 700;
+  color: #fff;
+  z-index: 40;
+  user-select: none;
+}
+
+.statusIcons {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.langBadge {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 2px 7px;
+  border-radius: 8px;
+  color: #fff;
+  cursor: pointer;
+  font-size: 9px;
+  font-weight: 800;
+  transition: background 0.2s, transform 0.1s;
+}
+
+.langBadge:hover {
+  background: rgba(52, 211, 153, 0.2);
+  border-color: rgba(52, 211, 153, 0.4);
+}
+
+.langBadge:active {
+  transform: scale(0.92);
+}
+
+.globeSvg {
+  width: 10px;
+  height: 10px;
+}
+
+.wifiIcon {
+  width: 12px;
+  height: 12px;
+}
+
+.batteryWrap {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.batteryWrap span {
+  font-size: 9px;
+}
+
+.batteryIcon {
+  width: 14px;
+  height: 14px;
+}
+
+/* App Core Container */
+.appContainer {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 8px 16px 0;
+  overflow: hidden;
+  position: relative;
+  z-index: 30;
+}
+
+/* App Header */
+.appHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 6px;
+  margin-bottom: 12px;
+}
+
+.userInfo {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #10b981, #047857);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+  box-shadow: 0 4px 10px rgba(16, 185, 129, 0.2);
+}
+
+.welcome {
+  font-size: 9px;
+  color: rgba(255, 255, 255, 0.4);
+  font-weight: 600;
+}
+
+.userLevel {
+  font-size: 11px;
+  font-weight: 800;
+  color: #34d399;
+  letter-spacing: 0.5px;
+}
+
+.streakPill {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 10px;
+  font-weight: 800;
+  color: #f87171;
+}
+
+.flameIcon {
+  width: 11px;
+  height: 11px;
+  color: #ef4444;
+  fill: #ef4444;
+}
+
+/* Level Progress Bar */
+.progressContainer {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 14px;
+  padding: 8px 10px;
+  margin-bottom: 14px;
+}
+
+.progressLabels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 9px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.5);
+  margin-bottom: 5px;
+}
+
+.progressBar {
+  height: 6px;
+  background: rgba(255, 255, 255, 0.07);
+  border-radius: 99px;
+  overflow: hidden;
+}
+
+.progressFill {
+  height: 100%;
+  background: linear-gradient(90deg, #10b981, #34d399);
+  border-radius: 99px;
+}
+
+/* In-App Tab Views */
+.tabView {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+  margin-bottom: 60px; /* offset for bottom menu */
+}
+
+.scrollArea {
+  position: absolute;
+  inset: 0;
+  overflow-y: auto;
+  padding-bottom: 18px;
+  display: flex;
+  flex-direction: column;
+}
+
+.scrollArea::-webkit-scrollbar {
+  width: 4px;
+}
+.scrollArea::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 2px;
+}
+
+.tabTitleRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 12px;
+}
+
+.tabTitleRow h3 {
+  font-size: 20px;
+  font-weight: 900;
+  letter-spacing: -0.5px;
+  margin: 0;
+  color: #fff;
+}
+
+.tabTitleRow p {
+  font-size: 9px;
+  color: rgba(255, 255, 255, 0.4);
+  font-weight: 700;
+  margin: 2px 0 0;
+}
+
+.quickLogBtn {
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+  background: #fff;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #000;
+  cursor: pointer;
+  transition: transform 0.2s, background-color 0.2s;
+  box-shadow: 0 4px 10px rgba(255,255,255,0.1);
+}
+
+.quickLogBtn:hover {
+  background: #34d399;
+}
+
+.quickLogBtn:active {
+  transform: scale(0.92);
+}
+
+.quickLogBtn svg {
+  width: 16px;
+  height: 16px;
+  stroke-width: 3px;
+}
+
+/* Mission cards list */
+.missionList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.missionCard {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  padding: 10px;
+  border-radius: 16px;
+  transition: background-color 0.3s, border-color 0.3s;
+}
+
+.completedCard {
+  background: rgba(16, 185, 129, 0.05);
+  border-color: rgba(16, 185, 129, 0.15);
+}
+
+.missionIcon {
+  font-size: 24px;
+}
+
+.missionInfo {
+  flex: 1;
+}
+
+.missionInfo h4 {
+  font-size: 11px;
+  font-weight: 700;
+  margin: 0 0 4px;
+  color: rgba(255,255,255,0.9);
+}
+
+.missionRewards {
+  display: flex;
+  gap: 5px;
+}
+
+.rewardTag {
+  font-size: 8px;
+  font-weight: 800;
+  padding: 1px 5px;
+  border-radius: 4px;
+  background: rgba(250, 204, 21, 0.1);
+  color: #facc15;
+}
+
+.pointTag {
+  font-size: 8px;
+  font-weight: 800;
+  padding: 1px 5px;
+  border-radius: 4px;
+  background: rgba(16, 185, 129, 0.1);
+  color: #34d399;
+}
+
+.doneBtn {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: none;
+  background: #fff;
+  color: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.2s, background-color 0.2s, color 0.2s;
+}
+
+.doneBtn:hover {
+  background: #34d399;
+}
+
+.doneBtn:active {
+  transform: scale(0.85);
+}
+
+.doneBtn svg {
+  width: 12px;
+  height: 12px;
+  stroke-width: 3px;
+}
+
+.doneBtnCompleted {
+  background: rgba(16, 185, 129, 0.15);
+  color: #34d399;
+  cursor: default;
+}
+
+.doneBtnCompleted svg {
+  width: 14px;
+  height: 14px;
+}
+
+/* Power Shower stopwatch trigger banner */
+.powerShowerBanner {
+  margin-top: 12px;
+  width: 100%;
+  border: 1px dashed rgba(52, 211, 153, 0.3);
+  background: rgba(16, 185, 129, 0.05);
+  padding: 11px;
+  border-radius: 16px;
+  color: #34d399;
+  font-size: 11px;
+  font-weight: 800;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  transition: background-color 0.2s, transform 0.2s;
+}
+
+.powerShowerBanner:hover {
+  background: rgba(16, 185, 129, 0.1);
+}
+
+.powerShowerBanner:active {
+  transform: scale(0.98);
+}
+
+.powerShowerBanner svg {
+  width: 14px;
+  height: 14px;
+}
+
+.clockIconAnim {
+  animation: ticktock 2s infinite ease-in-out;
+}
+
+/* 2. Garden Tab Styling */
+.gardenHeader {
+  text-align: center;
+  margin-bottom: 12px;
+}
+
+.gardenBadge {
+  display: inline-block;
+  font-size: 8px;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  padding: 2px 8px;
+  border-radius: 8px;
+  background: rgba(52, 211, 153, 0.1);
+  color: #34d399;
+  margin-bottom: 4px;
+}
+
+.gardenHeader h3 {
+  font-size: 20px;
+  font-weight: 900;
+  margin: 0;
+  color: #fff;
+}
+
+.gardenHeader p {
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.5);
+  margin: 3px 0 0;
+}
+
+.gardenRenderZone {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1.35;
+  background: linear-gradient(135deg, #062419 0%, #03140e 100%);
+  border: 1px solid rgba(52, 211, 153, 0.2);
+  border-radius: 24px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 
+    inset 0 0 25px rgba(0, 0, 0, 0.5),
+    0 10px 30px rgba(0,0,0,0.3);
+}
+
+.gardenAmbient {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 50% 50%, rgba(16, 185, 129, 0.15), transparent 70%);
+  animation: floatLight 8s infinite alternate ease-in-out;
+}
+
+.mainGardenEmoji {
+  font-size: 84px;
+  filter: drop-shadow(0 15px 15px rgba(0,0,0,0.6));
+  animation: breatheSprout 6s infinite ease-in-out;
+}
+
+/* Shop decor elements floating inside the garden */
+.decorOak {
+  position: absolute;
+  top: 18px;
+  left: 24px;
+  font-size: 32px;
+  filter: drop-shadow(0 4px 6px rgba(0,0,0,0.4));
+  animation: floatLight 4s infinite alternate ease-in-out;
+}
+
+.decorBird {
+  position: absolute;
+  top: 24px;
+  right: 32px;
+  font-size: 22px;
+  filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3));
+  animation: floatLight 3s infinite alternate-reverse ease-in-out;
+}
+
+.decorLantern {
+  position: absolute;
+  bottom: 24px;
+  left: 32px;
+  font-size: 20px;
+  filter: drop-shadow(0 0 10px rgba(239, 68, 68, 0.6));
+  animation: flickerLantern 1.8s infinite alternate ease-in-out;
+}
+
+.decorWaterfall {
+  position: absolute;
+  bottom: 12px;
+  right: 50%;
+  transform: translateX(50%);
+  font-size: 24px;
+  filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3));
+  opacity: 0.8;
+}
+
+.decorFox {
+  position: absolute;
+  bottom: 20px;
+  right: 28px;
+  font-size: 26px;
+  filter: drop-shadow(0 4px 6px rgba(0,0,0,0.4));
+  animation: breatheSprout 4.5s infinite ease-in-out;
+}
+
+.gardenFooterDesc {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  padding: 10px;
+  border-radius: 14px;
+  margin-top: 14px;
+}
+
+.gardenFooterDesc svg {
+  width: 14px;
+  height: 14px;
+  color: rgba(255, 255, 255, 0.4);
+  shrink: 0;
+  margin-top: 2px;
+}
+
+.gardenFooterDesc p {
+  font-size: 9px;
+  line-height: 1.35;
+  color: rgba(255, 255, 255, 0.45);
+  margin: 0;
+  font-weight: 500;
+}
+
+/* 3. Shop Rewards Styling */
+.shopTitleBar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.shopTitleBar h3 {
+  font-size: 20px;
+  font-weight: 900;
+  margin: 0;
+}
+
+.ptsCounter {
+  background: rgba(16, 185, 129, 0.08);
+  border: 1px solid rgba(16, 185, 129, 0.2);
+  border-radius: 12px;
+  padding: 4px 10px;
+  display: flex;
+  align-items: baseline;
+  gap: 3px;
+  color: #34d399;
+}
+
+.ptsCounter span {
+  font-size: 14px;
+  font-weight: 900;
+}
+
+.ptsCounter small {
+  font-size: 8px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.shopGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.shopCard {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  padding: 12px;
+  border-radius: 18px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  transition: background-color 0.3s, border-color 0.3s;
+}
+
+.shopCardUnlocked {
+  background: rgba(16, 185, 129, 0.03);
+  border-color: rgba(16, 185, 129, 0.12);
+}
+
+.shopEmoji {
+  font-size: 34px;
+  margin-bottom: 6px;
+  filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3));
+}
+
+.shopCard h4 {
+  font-size: 10px;
+  font-weight: 800;
+  margin: 0 0 3px;
+  color: #fff;
+}
+
+.shopCard p {
+  font-size: 8px;
+  color: rgba(255, 255, 255, 0.4);
+  line-height: 1.3;
+  margin: 0 0 10px;
+  flex: 1;
+}
+
+.unlockButton {
+  width: 100%;
+  border: none;
+  background: #fff;
+  color: #000;
+  font-size: 9px;
+  font-weight: 800;
+  padding: 6px 0;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: transform 0.2s, background-color 0.2s;
+}
+
+.unlockButton:hover {
+  background: #34d399;
+}
+
+.unlockButton:active {
+  transform: scale(0.94);
+}
+
+.unlockButton:disabled {
+  background: rgba(255, 255, 255, 0.05);
+  color: rgba(255, 255, 255, 0.2);
+  cursor: not-allowed;
+}
+
+.unlockedPill {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  font-size: 9px;
+  font-weight: 800;
+  color: #34d399;
+  background: rgba(16, 185, 129, 0.1);
+  width: 100%;
+  padding: 6px 0;
+  border-radius: 8px;
+}
+
+.unlockedPill svg {
+  width: 10px;
+  height: 10px;
+}
+
+/* 4. Insights Tab Styling */
+.insightHeader {
+  margin-bottom: 12px;
+}
+
+.insightHeader h3 {
+  font-size: 20px;
+  font-weight: 900;
+  margin: 0;
+}
+
+.insightHeader p {
+  font-size: 9px;
+  color: rgba(255, 255, 255, 0.4);
+  margin: 2px 0 0;
+  line-height: 1.3;
+}
+
+.metricGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.metricCard {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  padding: 10px;
+  border-radius: 16px;
+  text-align: center;
+}
+
+.metricIcon {
+  font-size: 20px;
+  margin-bottom: 3px;
+}
+
+.metricVal {
+  font-size: 11px;
+  font-weight: 900;
+  color: #34d399;
+  margin-bottom: 2px;
+}
+
+.metricLabel {
+  font-size: 7px;
+  color: rgba(255, 255, 255, 0.4);
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.weeklyChartCard {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 20px;
+  padding: 10px 12px;
+}
+
+.weeklyChartCard h4 {
+  font-size: 10px;
+  font-weight: 800;
+  color: rgba(255,255,255,0.7);
+  margin: 0 0 10px;
+}
+
+.chartBars {
+  height: 90px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  padding: 0 6px;
+}
+
+.chartCol {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  flex: 1;
+}
+
+.chartBarFill {
+  width: 10px;
+  background: linear-gradient(180deg, #34d399, #059669);
+  border-radius: 5px;
+  box-shadow: 0 0 10px rgba(52, 211, 153, 0.25);
+  transition: height 0.6s ease;
+}
+
+.chartCol span {
+  font-size: 8px;
+  color: rgba(255, 255, 255, 0.3);
+  font-weight: 700;
+}
+
+/* Native Mobile Bottom Navigation */
+.bottomNavbar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 56px;
+  background: rgba(5, 7, 6, 0.85);
+  backdrop-filter: blur(15px);
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 0 10px;
+  z-index: 80;
+}
+
+.navItem {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.3);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  transition: color 0.2s;
+  padding: 6px 0;
+}
+
+.navItem svg {
+  width: 16px;
+  height: 16px;
+  transition: transform 0.2s;
+}
+
+.navItem span {
+  font-size: 8px;
+  font-weight: 700;
+}
+
+.navItemActive {
+  color: #34d399;
+}
+
+.navItemActive svg {
+  transform: translateY(-2px);
+  color: #34d399;
+}
+
+/* Bottom home pill line */
+.bottomHomeLine {
+  position: absolute;
+  bottom: 5px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 110px;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.35);
+  border-radius: 2px;
+  z-index: 90;
+  pointer-events: none;
+}
+
+/* Toast alert popup inside the screen frame */
+.toastAlert {
+  position: absolute;
+  bottom: 74px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #34d399;
+  color: #000;
+  font-weight: 900;
+  font-size: 10px;
+  padding: 8px 14px;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+  z-index: 150;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+/* Modals Overlay Base */
+.modalOverlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(5px);
+  z-index: 120;
+  display: flex;
+  align-items: flex-end;
+}
+
+.modalSheet {
+  width: 100%;
+  background: #080a09;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 24px 24px 0 0;
+  padding: 12px 18px 24px;
+  box-shadow: 0 -10px 25px rgba(0,0,0,0.4);
+}
+
+.modalDragIndicator {
+  width: 40px;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 2px;
+  margin: 0 auto 12px;
+}
+
+.modalHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.modalHeader h4 {
+  font-size: 13px;
+  font-weight: 900;
+  color: #fff;
+  margin: 0;
+  letter-spacing: 0.5px;
+}
+
+.modalClose {
+  background: rgba(255,255,255,0.06);
+  border: none;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255,255,255,0.6);
+  cursor: pointer;
+}
+
+.modalClose svg {
+  width: 10px;
+  height: 10px;
+}
+
+.modalSubheading {
+  font-size: 9px;
+  color: rgba(255, 255, 255, 0.4);
+  margin: -6px 0 12px;
+}
+
+/* 1. Power Shower Stopwatch Styling */
+.timerRadialDisplay {
+  text-align: center;
+  padding: 18px 0;
+}
+
+.timerDigitalDigits {
+  font-family: monospace;
+  font-size: 42px;
+  font-weight: 900;
+  color: #fff;
+  letter-spacing: -1.5px;
+  margin-bottom: 4px;
+}
+
+.timerRadialDisplay p {
+  font-size: 9px;
+  color: rgba(255, 255, 255, 0.45);
+  margin: 0;
+}
+
+.timerActionsGrid {
+  display: flex;
+  gap: 8px;
+}
+
+.btnControl {
+  flex: 1.2;
+  border: none;
+  padding: 10px 0;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-size: 10px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: transform 0.1s;
+}
+
+.btnControl:active {
+  transform: scale(0.96);
+}
+
+.btnControlPause {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+
+.btnControlResume {
+  background: #34d399;
+  color: #000;
+}
+
+.btnControl svg {
+  width: 12px;
+  height: 12px;
+  fill: currentColor;
+}
+
+.btnEndSession {
+  flex: 1;
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  color: #f87171;
+  padding: 10px 0;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-size: 10px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.btnEndSession svg {
+  width: 12px;
+  height: 12px;
+}
+
+/* 2. Quick Log Drawer Styling */
+.quickLogOptions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.quickLogCard {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  padding: 10px 14px;
+  border-radius: 14px;
+  cursor: pointer;
+  transition: background-color 0.2s, border-color 0.2s, transform 0.1s;
+  text-align: left;
+}
+
+.quickLogCard:hover {
+  background: rgba(52, 211, 153, 0.05);
+  border-color: rgba(52, 211, 153, 0.2);
+}
+
+.quickLogCard:active {
+  transform: scale(0.98);
+}
+
+.quickLogLeft h5 {
+  font-size: 11px;
+  font-weight: 800;
+  color: #fff;
+  margin: 0 0 3px;
+}
+
+.quickLogRewards {
+  display: flex;
+  gap: 6px;
+}
+
+.quickLogRewards span {
+  font-size: 8px;
+  color: rgba(255, 255, 255, 0.45);
+  font-weight: 700;
+}
+
+.quickLogImpact {
+  font-size: 10px;
+  font-weight: 900;
+  color: #34d399;
+}
+
+/* Keyframes animations */
+@keyframes ticktock {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(-8deg); }
+  75% { transform: rotate(8deg); }
+}
+
+@keyframes flickerLantern {
+  0%, 100% { opacity: 0.8; filter: drop-shadow(0 0 6px rgba(245, 158, 11, 0.5)); }
+  50% { opacity: 1; filter: drop-shadow(0 0 12px rgba(245, 158, 11, 0.8)); }
+}
+
+@keyframes breatheSprout {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.03); }
+}
+
+@keyframes floatLight {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(-6px); }
+}
+
+@keyframes pulseIcon {
+  0%, 100% { transform: scale(1); opacity: 0.9; }
+  50% { transform: scale(1.15); opacity: 1; }
+}
+
+/* Make phone scalable and responsive */
+@media (max-width: 480px) {
+  .phoneShell {
+    transform: scale(0.9) rotateX(0deg) rotateY(0deg) rotateZ(0deg) !important;
+    transform-origin: center center;
+    margin: -30px 0;
+  }
+}
+@media (max-width: 375px) {
+  .phoneShell {
+    transform: scale(0.8) rotateX(0deg) rotateY(0deg) rotateZ(0deg) !important;
+  }
+}

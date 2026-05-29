@@ -454,7 +454,7 @@ function PremiumBakery({ isFever, hasVipLounge, hasDriveThru }: { isFever: boole
       {/* Display Cases */}
       {[-5, 5].map((x, i) => (
         <group key={"case-"+i} position={[x, 3.5, -8.5]}>
-          <mesh transparent opacity={0.3}>
+          <mesh>
             <boxGeometry args={[4, 1.8, 2]} />
             <meshStandardMaterial color="#88ccff" transparent opacity={0.4} />
           </mesh>
@@ -593,7 +593,7 @@ function Scene({ customers, employees, floatingTexts, serveRange, onServe, isFev
 }
 
 // --- UI Components ---
-const StatCard = ({ icon: Icon, label, value, colorClass }: { icon: React.ElementType, label: string, value: string|number, colorClass: string }) => (
+const StatCard = ({ icon: Icon, label, value, colorClass }: { icon: any, label: string, value: string|number, colorClass: string }) => (
     <div className={"flex items-center gap-3 bg-black/40 backdrop-blur-md px-4 py-2 rounded-xl border border-white/10 " + colorClass}>
       <div className="p-2 bg-white/10 rounded-lg"><Icon size={20} /></div>
       <div>
@@ -603,7 +603,7 @@ const StatCard = ({ icon: Icon, label, value, colorClass }: { icon: React.Elemen
     </div>
   );
 
-const UpgradeBtn = ({ title, desc, cost, onClick, icon: Icon, disabled, active }: { title: string, desc: string, cost: number, onClick: () => void, icon: React.ElementType, disabled: boolean, active?: boolean }) => (
+const UpgradeBtn = ({ title, desc, cost, onClick, icon: Icon, disabled, active }: { title: string, desc: string, cost: number, onClick: () => void, icon: any, disabled: boolean, active?: boolean }) => (
     <button 
       onClick={onClick} 
       disabled={disabled}

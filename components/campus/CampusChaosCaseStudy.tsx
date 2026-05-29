@@ -19,7 +19,7 @@ export default function CampusChaosCaseStudy() {
     return () => clearInterval(timer);
   }, []);
 
-  const buy = (id) => {
+  const buy = (id: number) => {
     setBuildings(b => b.map(item => {
       if (item.id === id && cash >= item.cost) {
         setCash(c => c - item.cost);
