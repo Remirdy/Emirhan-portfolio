@@ -210,7 +210,7 @@ export default function EcoQuestPage() {
             </div>
           ))}
         </div>
-      </section>
+      </div>
 
       {/* Main Content */}
       <div className="max-w-6xl mx-auto px-6">
