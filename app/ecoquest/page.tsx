@@ -46,7 +46,7 @@ const initialRewards: Reward[] = [
   { id: 6, name: "Fox Companion", cost: 380, icon: "🦊", unlocked: false, description: "A playful fox that follows you" },
 ]
 
-export default function EcoQuestProDemo() {
+export default function EcoQuestPage() {
   // Core Game State
   const [missions, setMissions] = useState<Mission[]>(initialMissions)
   const [rewards, setRewards] = useState<Reward[]>(initialRewards)
@@ -123,7 +123,6 @@ export default function EcoQuestProDemo() {
       showNotification(`+${mission.xp} XP • +${mission.points} Eco Points`)
     }
 
-    // Auto-increase streak every 3 completions
     if (newMissions.filter(m => m.completed).length % 3 === 0) {
       setStreak(s => s + 1)
     }
@@ -161,7 +160,7 @@ export default function EcoQuestProDemo() {
   const quickLog = (name: string, xpGain: number, ptGain: number, impact: number) => {
     const newXP = xp + xpGain
     const newPoints = ecoPoints + ptGain
-    setXp(newXP)
+n    setXp(newXP)
     setEcoPoints(newPoints)
     setCo2Saved(p => parseFloat((p + impact).toFixed(1)))
     
@@ -187,11 +186,11 @@ export default function EcoQuestProDemo() {
       {/* Professional Hero */}
       <section className="max-w-6xl mx-auto px-6 text-center mb-10">
         <div className="inline-flex items-center gap-2 px-5 py-1.5 rounded-full border border-emerald-400/30 bg-emerald-400/10 text-emerald-300 text-xs font-bold tracking-[0.3em] mb-5">
-          <Leaf className="w-3.5 h-3.5" /> PRODUCTION READY PROTOTYPE
+          <Leaf className="w-3.5 h-3.5" /> SUSTAINABILITY PLATFORM
         </div>
         <h1 className="text-7xl md:text-[86px] font-black tracking-[-4.2px] leading-none mb-3">EcoQuest</h1>
-        <p className="text-3xl text-emerald-300 font-semibold tracking-[-1px] mb-4">Complex Interactive Demo</p>
-        <p className="max-w-xl mx-auto text-lg text-white/70">A fully functional, state-driven prototype with real progression, live systems, and polished micro-interactions.</p>
+        <p className="text-3xl text-emerald-300 font-semibold tracking-[-1px] mb-4">Interactive Product Experience</p>
+        <p className="max-w-xl mx-auto text-lg text-white/70">A fully functional prototype with real progression systems, live feedback, and polished interactions — built as a real product experience.</p>
       </section>
 
       {/* Live Metrics Bar */}
@@ -230,7 +229,7 @@ export default function EcoQuestProDemo() {
           ))}
         </div>
 
-        {/* MISSIONS - Rich Interactive */}
+        {/* MISSIONS */}
         {activeTab === 'missions' && (
           <div>
             <div className="flex items-baseline justify-between mb-5">
@@ -248,11 +247,11 @@ export default function EcoQuestProDemo() {
                 <div key={m.id} className={`rounded-3xl border p-6 flex gap-5 transition-all ${m.completed ? 'border-emerald-400/40 bg-emerald-400/5' : 'border-white/10 bg-white/5 hover:border-white/20'}`}>
                   <div className="text-6xl mt-1 opacity-90 shrink-0">{m.icon}</div>
                   <div className="flex-1 min-w-0">
-                    <div className="font-bold text-[21px] tracking-[-0.3px] leading-tight pr-2">{m.title}</div>
+                    <div className="font-bold text-[21px] tracking-[-0.3px] leading-tight pr-8">{m.title}</div>
                     <div className="mt-2.5 flex items-center gap-2">
-                      <span className="text-xs px-4 py-1 rounded-full bg-white/10 text-white/80">{m.category}</span>
-                      <span className="text-xs px-4 py-1 rounded-full bg-yellow-400/10 text-yellow-400">+{m.xp} XP</span>
-                      <span className="text-xs px-4 py-1 rounded-full bg-emerald-400/10 text-emerald-400">+{m.points} pts</span>
+                      <div className="text-xs px-4 py-1 rounded-full bg-white/10 text-white/80">{m.category}</div>
+                      <div className="text-xs px-4 py-1 rounded-full bg-yellow-400/10 text-yellow-400">+{m.xp} XP</div>
+                      <div className="text-xs px-4 py-1 rounded-full bg-emerald-400/10 text-emerald-400">+{m.points} pts</div>
                     </div>
                   </div>
                   <button onClick={() => completeMission(m.id)} disabled={m.completed}
@@ -264,12 +263,12 @@ export default function EcoQuestProDemo() {
             </div>
 
             <button onClick={startTimer} className="w-full py-4 rounded-3xl border border-white/15 bg-white/5 hover:bg-white/10 font-bold flex items-center justify-center gap-3 text-lg active:bg-white/10">
-              <Clock className="w-5 h-5" /> Start Shower Timer (Real 5-minute countdown)
+              <Clock className="w-5 h-5" /> Start Shower Timer
             </button>
           </div>
         )}
 
-        {/* GARDEN - More detailed visual */}
+        {/* GARDEN */}
         {activeTab === 'garden' && (
           <div className="text-center">
             <div className="mb-6">
@@ -285,7 +284,7 @@ export default function EcoQuestProDemo() {
               {gardenLevel >= 5 && <div className="absolute bottom-20 right-[24%] text-7xl opacity-80">🦊</div>}
             </div>
 
-            <div className="max-w-sm mx-auto text-sm text-white/60">Garden grows automatically when you level up or complete multiple missions in a row.</div>
+            <div className="max-w-sm mx-auto text-sm text-white/60">Your garden evolves automatically as you progress through levels and maintain consistent habits.</div>
           </div>
         )}
 
@@ -294,12 +293,12 @@ export default function EcoQuestProDemo() {
           <div>
             <div className="flex items-end justify-between mb-6">
               <div>
-                <div className="text-emerald-400 text-xs tracking-[3px] font-mono">SPEND TO CUSTOMIZE</div>
+                <div className="text-emerald-400 text-xs tracking-[3px] font-mono">CUSTOMIZE YOUR WORLD</div>
                 <div className="text-5xl font-black tracking-[-1.5px]">Rewards Store</div>
               </div>
               <div className="text-right">
                 <div className="text-emerald-400 text-4xl font-black tabular-nums">{ecoPoints}</div>
-                <div className="text-xs text-white/60 -mt-1">AVAILABLE</div>
+                <div className="text-xs text-white/60 -mt-1">AVAILABLE POINTS</div>
               </div>
             </div>
 
@@ -314,7 +313,7 @@ export default function EcoQuestProDemo() {
                     <div className="mt-5 text-emerald-400 font-bold flex items-center gap-2"><CheckCircle className="w-5 h-5" /> Unlocked</div>
                   ) : (
                     <button onClick={() => unlockReward(r.id)} disabled={ecoPoints < r.cost} className="mt-5 w-full py-3.5 rounded-2xl font-bold bg-white text-black disabled:opacity-40 active:scale-[0.985]">
-                      Unlock • {r.cost} pts
+                      Unlock for {r.cost} points
                     </button>
                   )}
                 </div>
@@ -327,14 +326,14 @@ export default function EcoQuestProDemo() {
         {activeTab === 'insights' && (
           <div className="max-w-3xl mx-auto">
             <div className="text-center mb-8">
-              <div className="text-emerald-400 text-xs tracking-[3px] font-mono">YOUR IMPACT THIS WEEK</div>
-              <div className="text-5xl font-black tracking-[-1.5px] mt-1">Real Numbers</div>
+              <div className="text-emerald-400 text-xs tracking-[3px] font-mono">MEASURED IMPACT</div>
+              <div className="text-5xl font-black tracking-[-1.5px] mt-1">Your Real-World Effect</div>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {[ 
-                { label: "CO₂ Saved", val: co2Saved + " kg", sub: "Equivalent to 1.2 trees" },
-                { label: "Waste Reduced", val: wasteReduced + " kg", sub: "2.8 kg more than last week" },
-                { label: "Water Saved", val: waterSaved + " L", sub: "From shorter showers" },
+                { label: "CO₂ Saved", val: co2Saved + " kg", sub: "Equivalent to planting 1.4 trees" },
+                { label: "Waste Reduced", val: wasteReduced + " kg", sub: "+2.8 kg compared to last week" },
+                { label: "Water Saved", val: waterSaved + " L", sub: "From shorter showers & habits" },
               ].map((s, i) => (
                 <div key={i} className="rounded-3xl border border-white/10 bg-white/5 p-7">
                   <div className="text-white/60 text-sm mb-2">{s.label}</div>
@@ -343,25 +342,25 @@ export default function EcoQuestProDemo() {
                 </div>
               ))}
             </div>
-            <div className="mt-6 text-center text-xs text-white/50">All numbers are calculated live from your actions in this demo.</div>
+            <div className="mt-6 text-center text-xs text-white/50">All metrics update live based on your actions inside this experience.</div>
           </div>
         )}
       </div>
 
-      {/* Working Timer Modal */}
+      {/* Timer Modal */}
       <AnimatePresence>
         {showTimer && (
           <div className="fixed inset-0 z-[200] bg-black/95 flex items-center justify-center p-6">
             <div className="bg-zinc-950 border border-white/10 rounded-3xl p-10 w-full max-w-md text-center">
               <div className="text-emerald-400 text-xs tracking-[4px] font-mono mb-1">SHOWER TIMER</div>
               <div className="font-mono text-[92px] font-black tracking-[-5px] text-white mb-1 tabular-nums">{formatTime(timerSeconds)}</div>
-              <p className="text-white/60 mb-8">Every minute saved helps the planet.</p>
+              <p className="text-white/60 mb-8">Every minute saved protects our resources.</p>
 
               <div className="flex gap-3">
                 <button onClick={isTimerRunning ? pauseTimer : () => setIsTimerRunning(true)} className="flex-1 py-4 rounded-2xl font-bold text-lg bg-white text-black active:scale-[0.985]">
                   {isTimerRunning ? 'PAUSE' : 'RESUME'}
                 </button>
-                <button onClick={resetTimer} className="flex-1 py-4 rounded-2xl font-bold text-lg border border-white/20 active:bg-white/5">END</button>
+                <button onClick={resetTimer} className="flex-1 py-4 rounded-2xl font-bold text-lg border border-white/20 active:bg-white/5">END SESSION</button>
               </div>
             </div>
           </div>
@@ -407,7 +406,7 @@ export default function EcoQuestProDemo() {
         )}
       </AnimatePresence>
 
-      <div className="text-center text-[10px] text-white/40 tracking-[3px] mt-16">COMPLEX DETAILED PROTOTYPE • All systems fully functional • Progress saved locally</div>
+      <div className="text-center text-[10px] text-white/40 tracking-[3px] mt-16">All systems are fully functional • Progress is saved locally in your browser</div>
     </main>
   )
 }
