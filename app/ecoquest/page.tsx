@@ -22,7 +22,7 @@ export default function EcoQuestShowcase() {
             className="inline-flex items-center gap-2 text-emerald-400 hover:text-emerald-300 font-bold text-sm tracking-wide group transition"
           >
             <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-            BAŞLANGICA DÖN / BACK TO PORTFOLIO
+            BACK TO PORTFOLIO
           </Link>
         </div>
 
@@ -42,8 +42,8 @@ export default function EcoQuestShowcase() {
                 Habit Tracking Gamified
               </p>
               <p className="text-base text-white/70 leading-relaxed max-w-xl">
-                EcoQuest, sürdürülebilir yaşam alışkanlıklarını eğlenceli ve rekabetçi bir oyuna dönüştürür.
-                Günlük görevlerinizi yapın, puan kazanın, seviye atlayın ve puanlarınızla yaşam alanınızı (bahçenizi) güzelleştirin!
+                EcoQuest transforms sustainable living habits into a fun and competitive game. 
+                Complete your daily missions, earn points, level up, and use your rewards to beautify your personal virtual garden ecosystem!
               </p>
             </div>
 

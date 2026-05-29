@@ -221,9 +221,8 @@ export default function MotionGallery({ videos, images }: { videos: MotionItem[]
         <div className={g.pill}><Clapperboard size={14} /> METRAJ PRODUCTION SHOWCASE</div>
         <h1 className={g.title}>Creative <span>Motion</span></h1>
         <p className={g.lead}>
-          Photoshop katman tasarımlarını canlandırma, AI video-to-motion teknikleri ve sinematik görsel yapım.
-          Statik tasarımlar ile hareketli hallerini yan yana veya geçişli olarak keşfedin.
-          {total > 0 ? ` Toplamda ${total} parça çalışma listeleniyor.` : '.'}
+          Animating ready-made PSD compositions, adding parallax depth, and crafting modern motion graphics.
+          Explore my static layered designs alongside their animated motion counterparts in the tabs above.
         </p>
 
         <div className={g.headerActions}>
