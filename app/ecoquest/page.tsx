@@ -160,7 +160,7 @@ export default function EcoQuestPage() {
   const quickLog = (name: string, xpGain: number, ptGain: number, impact: number) => {
     const newXP = xp + xpGain
     const newPoints = ecoPoints + ptGain
-n    setXp(newXP)
+    setXp(newXP)
     setEcoPoints(newPoints)
     setCo2Saved(p => parseFloat((p + impact).toFixed(1)))
     
