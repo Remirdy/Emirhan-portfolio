@@ -1,0 +1,125 @@
+.frame{
+  --vio:#7c5cff; --vio2:#a78bfa; --ink:#0a0f1f; --line:rgba(255,255,255,.07);
+  --txt:#e7ecf6; --mut:#8b93a7;
+  position:relative; border-radius:22px; overflow:hidden;
+  border:1px solid rgba(124,92,255,.18);
+  background:
+    radial-gradient(120% 90% at 80% -10%, rgba(124,92,255,.22), transparent 55%),
+    radial-gradient(90% 80% at 0% 110%, rgba(56,189,248,.10), transparent 55%),
+    linear-gradient(160deg,#0b1022 0%,#070b16 60%,#05070f 100%);
+  box-shadow:0 40px 120px rgba(0,0,0,.55), inset 0 0 0 1px rgba(255,255,255,.03);
+  color:var(--txt); font-size:13px;
+}
+.chrome{display:flex; gap:7px; padding:13px 16px; border-bottom:1px solid var(--line)}
+.chrome span{width:11px;height:11px;border-radius:50%}
+.dotR{background:#ff5f57}.dotY{background:#febc2e}.dotG{background:#28c840}
+
+.body{display:grid; grid-template-columns:200px 1fr; min-height:560px}
+
+/* sidebar */
+.sidebar{border-right:1px solid var(--line); padding:18px 14px; display:flex; flex-direction:column; gap:18px;
+  background:linear-gradient(180deg, rgba(255,255,255,.02), transparent)}
+.logo{display:flex; align-items:center; gap:9px; font-size:16px; font-weight:800}
+.logo b span{background:linear-gradient(90deg,var(--vio),var(--vio2)); -webkit-background-clip:text; background-clip:text; color:transparent}
+.logoMark{display:grid;place-items:center;width:28px;height:28px;border-radius:9px;
+  background:linear-gradient(135deg,var(--vio),#5b8cff); color:#fff}
+.nav{display:flex; flex-direction:column; gap:4px}
+.nav a{display:flex; align-items:center; gap:10px; padding:10px 11px; border-radius:10px; color:var(--mut);
+  font-weight:600; cursor:pointer; transition:.2s}
+.nav a:hover{color:var(--txt); background:rgba(255,255,255,.04)}
+.navActive{color:#fff !important;
+  background:linear-gradient(90deg, rgba(124,92,255,.9), rgba(91,140,255,.85)) !important;
+  box-shadow:0 8px 22px rgba(124,92,255,.35)}
+.proCard{margin-top:auto; border:1px solid var(--line); border-radius:14px; padding:14px;
+  background:radial-gradient(120% 100% at 50% 0%, rgba(124,92,255,.16), transparent), rgba(255,255,255,.02);
+  display:flex; flex-direction:column; gap:6px}
+.proCard b{font-size:13px}
+.proCard span{font-size:11px; color:var(--mut); line-height:1.4}
+.proCard button{margin-top:6px; border:none; border-radius:9px; padding:9px; font-weight:700; color:#fff; cursor:pointer;
+  background:linear-gradient(90deg,var(--vio),#5b8cff); box-shadow:0 8px 20px rgba(124,92,255,.35)}
+
+/* main */
+.main{padding:20px 22px; display:flex; flex-direction:column; gap:16px}
+.topbar{display:flex; justify-content:space-between; align-items:flex-start}
+.topbar h3{margin:0; font-size:20px; font-weight:800}
+.topbar p{margin:2px 0 0; font-size:12px; color:var(--mut)}
+.topActions{display:flex; align-items:center; gap:10px}
+.newBtn{display:flex; align-items:center; gap:6px; border:none; border-radius:10px; padding:9px 13px; font-weight:700; color:#fff; cursor:pointer;
+  background:linear-gradient(90deg,var(--vio),#5b8cff); box-shadow:0 8px 20px rgba(124,92,255,.35)}
+.iconBtn{display:grid; place-items:center; width:36px; height:36px; border-radius:10px; border:1px solid var(--line); color:var(--mut)}
+.avatar{display:grid; place-items:center; width:36px; height:36px; border-radius:50%; font-size:11px; font-weight:800; color:#fff;
+  background:linear-gradient(135deg,var(--vio),#5b8cff)}
+
+.statGrid{display:grid; grid-template-columns:repeat(4,1fr); gap:12px}
+.statCard{border:1px solid var(--line); border-radius:14px; padding:14px; background:rgba(255,255,255,.025);
+  display:flex; flex-direction:column; gap:7px; transition:.25s}
+.statCard:hover{border-color:rgba(124,92,255,.4); transform:translateY(-3px); box-shadow:0 16px 40px rgba(0,0,0,.35)}
+.statTop{display:flex; align-items:center; gap:7px; color:var(--mut); font-size:11.5px; font-weight:600}
+.statCard strong{font-size:22px; font-weight:800; letter-spacing:-.5px}
+.trend{display:flex; align-items:center; gap:4px; font-style:normal; font-size:10.5px; color:#34d399}
+.miniBar{height:5px; border-radius:99px; background:rgba(255,255,255,.08); overflow:hidden}
+.miniBar i{display:block; height:100%; background:linear-gradient(90deg,var(--vio),#5b8cff)}
+
+.panel{border:1px solid var(--line); border-radius:16px; padding:16px; background:rgba(255,255,255,.022)}
+.panelHead{display:flex; justify-content:space-between; align-items:center; margin-bottom:13px}
+.panelHead h4{margin:0; font-size:14px; font-weight:700}
+.viewAll{font-size:11px; color:var(--vio2); cursor:pointer; font-weight:600}
+
+.projectRow{display:grid; grid-template-columns:repeat(5,1fr); gap:12px}
+.project{display:flex; flex-direction:column; gap:6px}
+.thumb{aspect-ratio:1/1; border-radius:11px; box-shadow:inset 0 0 0 1px rgba(255,255,255,.08); transition:.25s}
+.project:hover .thumb{transform:translateY(-4px) scale(1.03); box-shadow:0 14px 30px rgba(0,0,0,.4)}
+.project b{font-size:12px}
+.project span{font-size:10.5px; color:var(--mut)}
+
+.lower{display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; align-items:start}
+.fieldLabel{display:block; font-size:11px; color:var(--mut); margin:10px 0 6px; font-weight:600}
+.sizeRow{display:flex; align-items:center; gap:7px}
+.sizeRow input,.inlineField input,.select{background:rgba(255,255,255,.04); border:1px solid var(--line); border-radius:9px;
+  color:var(--txt); padding:9px 10px; font-size:12.5px; width:100%}
+.x{color:var(--mut)}
+.unit{background:rgba(255,255,255,.04); border:1px solid var(--line); border-radius:9px; color:var(--mut); padding:9px 8px; white-space:nowrap; cursor:pointer}
+.lockBtn{display:grid; place-items:center; min-width:34px; height:34px; border-radius:9px; border:1px solid var(--line); color:var(--mut)}
+.inlineField{display:flex; align-items:center; gap:8px}
+.suffix{color:var(--mut)}
+.select{display:flex; justify-content:space-between; align-items:center; cursor:pointer; text-align:left}
+.down{transform:rotate(90deg); color:var(--mut)}
+.toggleRow{display:flex; justify-content:space-between; align-items:center; margin-top:14px; font-size:12px}
+.toggle{width:38px; height:21px; border-radius:99px; background:linear-gradient(90deg,var(--vio),#5b8cff); position:relative; box-shadow:0 0 14px rgba(124,92,255,.45)}
+.toggle i{position:absolute; top:2.5px; right:2.5px; width:16px; height:16px; border-radius:50%; background:#fff}
+
+.presetList{display:flex; flex-direction:column; gap:8px}
+.preset{display:flex; align-items:center; gap:11px; width:100%; text-align:left; cursor:pointer;
+  border:1px solid var(--line); border-radius:11px; padding:9px 11px; background:rgba(255,255,255,.02); transition:.2s}
+.preset:hover{border-color:rgba(124,92,255,.45); transform:translateX(3px); background:rgba(124,92,255,.07)}
+.presetIcon{display:grid; place-items:center; width:32px; height:32px; border-radius:9px}
+.presetText{display:flex; flex-direction:column; flex:1}
+.presetText b{font-size:12.5px}
+.presetText em{font-style:normal; font-size:10.5px; color:var(--mut)}
+.presetArrow{color:var(--mut)}
+
+.dropzone{display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; gap:8px;
+  border-style:dashed; border-color:rgba(124,92,255,.3); color:var(--mut); min-height:200px}
+.dropzone b{color:var(--txt); font-size:14px}
+.dropzone span{font-size:11.5px; line-height:1.5}
+.dropzone em{font-style:normal; color:var(--vio2); text-decoration:underline}
+.dropzone svg{color:var(--vio2)}
+
+.featureRow{display:grid; grid-template-columns:repeat(4,1fr); gap:12px;
+  border:1px solid var(--line); border-radius:16px; padding:18px; background:rgba(255,255,255,.022)}
+.feature{display:flex; flex-direction:column; align-items:center; text-align:center; gap:7px}
+.featureIcon{display:grid; place-items:center; width:46px; height:46px; border-radius:13px; color:var(--vio2);
+  border:1px solid rgba(124,92,255,.3); background:rgba(124,92,255,.08)}
+.feature b{font-size:14px}
+.feature span{font-size:11px; color:var(--mut); line-height:1.45}
+
+@media (max-width:900px){
+  .body{grid-template-columns:1fr}
+  .sidebar{flex-direction:row; flex-wrap:wrap; align-items:center; border-right:none; border-bottom:1px solid var(--line)}
+  .proCard{display:none}
+  .nav{flex-direction:row; flex-wrap:wrap; flex:1}
+  .statGrid{grid-template-columns:repeat(2,1fr)}
+  .projectRow{grid-template-columns:repeat(2,1fr)}
+  .lower{grid-template-columns:1fr}
+  .featureRow{grid-template-columns:repeat(2,1fr)}
+}
