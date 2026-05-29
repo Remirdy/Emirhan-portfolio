@@ -1,0 +1,384 @@
+.root {
+  position: relative;
+  min-height: 100svh;
+  width: 100%;
+  overflow: hidden;
+  background:
+    radial-gradient(1200px 700px at 50% 18%, rgba(20, 90, 50, 0.35), transparent 60%),
+    radial-gradient(900px 600px at 80% 90%, rgba(15, 70, 40, 0.25), transparent 60%),
+    #03060a;
+  color: #d9ffe9;
+  font-family: ui-monospace, "SF Mono", "Cascadia Code", Menlo, Consolas, monospace;
+  isolation: isolate;
+  padding: clamp(24px, 5vw, 60px) clamp(16px, 4vw, 56px) 120px;
+}
+
+/* ---- ambient layers ---- */
+.particles {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  pointer-events: none;
+}
+.scanlines {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0) 0px,
+    rgba(0, 0, 0, 0) 2px,
+    rgba(0, 0, 0, 0.18) 3px,
+    rgba(0, 0, 0, 0) 4px
+  );
+  mix-blend-mode: multiply;
+  opacity: 0.5;
+}
+.vignette {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  background: radial-gradient(120% 120% at 50% 40%, transparent 55%, rgba(0, 0, 0, 0.75) 100%);
+}
+.asmBg {
+  position: absolute;
+  right: 4%;
+  bottom: 12%;
+  z-index: 1;
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.5;
+  color: rgba(57, 255, 154, 0.18);
+  text-shadow: 0 0 8px rgba(57, 255, 154, 0.25);
+  transform: rotate(-4deg);
+  pointer-events: none;
+  white-space: pre;
+}
+
+/* ---- title ---- */
+.titleWrap {
+  position: relative;
+  z-index: 5;
+  text-align: center;
+  margin-bottom: clamp(20px, 4vw, 40px);
+}
+.glitch {
+  position: relative;
+  display: inline-block;
+  margin: 0;
+  font-size: clamp(56px, 13vw, 168px);
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  line-height: 0.9;
+  color: #eafff3;
+  text-shadow:
+    0 0 12px rgba(57, 255, 154, 0.9),
+    0 0 38px rgba(40, 220, 130, 0.6),
+    0 0 80px rgba(30, 180, 110, 0.4);
+}
+.glitch::before,
+.glitch::after {
+  content: attr(data-text);
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.glitch::before {
+  color: #43ffd0;
+  animation: glitchTop 3.2s infinite linear alternate-reverse;
+  clip-path: inset(0 0 55% 0);
+  opacity: 0.7;
+}
+.glitch::after {
+  color: #1affa0;
+  animation: glitchBottom 2.6s infinite linear alternate-reverse;
+  clip-path: inset(55% 0 0 0);
+  opacity: 0.6;
+}
+@keyframes glitchTop {
+  0% { transform: translate(0, 0); }
+  20% { transform: translate(-3px, -1px); }
+  40% { transform: translate(2px, 1px); }
+  60% { transform: translate(-2px, 0); }
+  80% { transform: translate(3px, -1px); }
+  100% { transform: translate(0, 0); }
+}
+@keyframes glitchBottom {
+  0% { transform: translate(0, 0); }
+  25% { transform: translate(3px, 1px); }
+  50% { transform: translate(-3px, 0); }
+  75% { transform: translate(2px, -1px); }
+  100% { transform: translate(0, 0); }
+}
+.subtitle {
+  margin: 14px 0 0;
+  font-size: clamp(13px, 2.2vw, 22px);
+  letter-spacing: 0.42em;
+  color: #5dffb0;
+  text-shadow: 0 0 10px rgba(57, 255, 154, 0.6);
+}
+
+/* ---- desktop / windows ---- */
+.desktop {
+  position: relative;
+  z-index: 5;
+  max-width: 920px;
+  margin: 0 auto;
+  height: clamp(380px, 52vw, 520px);
+}
+.win {
+  position: absolute;
+  border: 1px solid rgba(90, 255, 170, 0.35);
+  border-radius: 6px;
+  background: rgba(6, 18, 12, 0.72);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.4),
+    0 18px 60px rgba(0, 0, 0, 0.6),
+    0 0 40px rgba(40, 220, 130, 0.15);
+  cursor: grab;
+  user-select: none;
+}
+.win:active { cursor: grabbing; }
+.winBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 10px;
+  background: linear-gradient(180deg, rgba(40, 120, 80, 0.55), rgba(18, 60, 40, 0.5));
+  border-bottom: 1px solid rgba(90, 255, 170, 0.25);
+  border-radius: 6px 6px 0 0;
+}
+.winTitle {
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  color: #d6ffe8;
+  text-shadow: 0 0 6px rgba(57, 255, 154, 0.5);
+}
+.winButtons { display: inline-flex; gap: 6px; }
+.winButtons i {
+  width: 11px;
+  height: 11px;
+  border-radius: 2px;
+  display: inline-block;
+}
+.winMin { background: #2fd07e; }
+.winMax { background: #1fae6b; }
+.winClose { background: #0e7a48; }
+.winContent { padding: 0; }
+
+.termWin { width: clamp(280px, 40vw, 380px); }
+.snakeWin { width: clamp(240px, 32vw, 300px); }
+.fsWin { width: clamp(260px, 34vw, 320px); }
+.wmWin { width: clamp(220px, 28vw, 260px); }
+
+/* terminal */
+.terminalBody {
+  padding: 10px 12px;
+  height: 200px;
+  overflow: hidden;
+  font-size: 11.5px;
+  line-height: 1.55;
+  color: #8effc0;
+}
+.termLine { white-space: pre-wrap; word-break: break-word; }
+.termLine[data-ok="true"] { color: #4dff9b; }
+.caret {
+  display: inline-block;
+  width: 7px;
+  height: 13px;
+  margin-left: 2px;
+  background: #4dff9b;
+  vertical-align: text-bottom;
+  animation: blink 1s steps(1) infinite;
+  box-shadow: 0 0 8px rgba(57, 255, 154, 0.8);
+}
+@keyframes blink { 50% { opacity: 0; } }
+
+/* menu bar */
+.menuBar {
+  display: flex;
+  gap: 14px;
+  padding: 4px 10px;
+  font-size: 11px;
+  color: #9effc6;
+  border-bottom: 1px solid rgba(90, 255, 170, 0.18);
+}
+
+/* snake */
+.snakeWrap {
+  position: relative;
+  padding: 10px;
+  display: flex;
+  justify-content: center;
+}
+.snakeScore {
+  position: absolute;
+  top: 14px;
+  right: 16px;
+  font-size: 13px;
+  color: #5dffb0;
+  text-shadow: 0 0 8px rgba(57, 255, 154, 0.7);
+}
+.snakeCanvas {
+  border: 1px solid rgba(90, 255, 170, 0.25);
+  border-radius: 3px;
+  image-rendering: pixelated;
+  background: #040b06;
+}
+
+/* file grid */
+.fileGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px 8px;
+  padding: 16px 14px;
+}
+.fileItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+.fileIcon {
+  width: 36px;
+  height: 28px;
+  border-radius: 3px;
+  background: linear-gradient(160deg, #5cffc0, #16a865);
+  box-shadow: 0 0 14px rgba(57, 255, 154, 0.4);
+  position: relative;
+}
+.fileIcon::before {
+  content: "";
+  position: absolute;
+  top: -5px;
+  left: 4px;
+  width: 14px;
+  height: 6px;
+  border-radius: 2px 2px 0 0;
+  background: #2fd07e;
+}
+.fileName { font-size: 10.5px; color: #b7ffd6; }
+
+/* window manager demo */
+.wmRow {
+  display: flex;
+  gap: 12px;
+  padding: 18px 16px;
+}
+.wmIcon {
+  width: 34px;
+  height: 34px;
+  border-radius: 6px;
+  background: linear-gradient(160deg, #5cffc0, #138a55);
+  box-shadow: 0 0 14px rgba(57, 255, 154, 0.4);
+}
+
+/* ---- taskbar ---- */
+.taskbar {
+  position: relative;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  max-width: 920px;
+  margin: 22px auto 0;
+  padding: 8px 12px;
+  border: 1px solid rgba(90, 255, 170, 0.3);
+  border-radius: 6px;
+  background: linear-gradient(180deg, rgba(20, 70, 45, 0.6), rgba(8, 24, 16, 0.6));
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  font-size: 12px;
+}
+.start {
+  padding: 4px 10px;
+  border-radius: 4px;
+  background: rgba(57, 255, 154, 0.18);
+  color: #d9ffe9;
+  font-weight: 700;
+}
+.taskItem {
+  padding: 4px 10px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.04);
+  color: #9effc6;
+}
+.tray {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.trayDot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #39ff9a;
+  box-shadow: 0 0 8px rgba(57, 255, 154, 0.9);
+}
+.clock { color: #d9ffe9; }
+
+/* ---- features ---- */
+.features {
+  position: relative;
+  z-index: 5;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: clamp(14px, 4vw, 40px);
+  margin: 48px auto 0;
+}
+.feature {
+  font-size: clamp(14px, 2.4vw, 26px);
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  color: #eafff3;
+  text-shadow: 0 0 12px rgba(57, 255, 154, 0.7);
+  position: relative;
+}
+.feature::after {
+  content: "·";
+  position: absolute;
+  right: calc(-1 * clamp(7px, 2vw, 20px));
+  color: #2fd07e;
+}
+.feature:last-child::after { content: ""; }
+.meta {
+  position: relative;
+  z-index: 5;
+  text-align: center;
+  margin-top: 18px;
+  font-size: 12px;
+  letter-spacing: 0.18em;
+  color: #4f9a76;
+}
+
+/* ---- responsive ---- */
+@media (max-width: 720px) {
+  .asmBg { display: none; }
+  .desktop {
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    align-items: center;
+  }
+  .win {
+    position: relative !important;
+    transform: none !important;
+    width: min(92vw, 360px) !important;
+    inset: auto !important;
+  }
+  /* let framer-motion inline transforms be overridden on mobile */
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .glitch::before,
+  .glitch::after { animation: none; }
+}

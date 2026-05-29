@@ -11,6 +11,7 @@ export default function Navbar() {
     { href: '/#dirty', label: 'Dirty Birdy!' },
     { href: '/play', label: 'Play' },
     { href: '/motion', label: 'Motion' },
+    { href: '/umayos', label: 'UmayOS' },
     { href: '/ecoquest', label: 'EcoQuest' },
     { href: '/#imageforge', label: 'Projects' },
   ]
