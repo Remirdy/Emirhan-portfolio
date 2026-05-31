@@ -14,7 +14,6 @@ export type MotionItem = {
   name: string
   index: number
   type: 'video' | 'image'
-  poster?: string
 }
 
 type MediaSection = 'video' | 'image'
@@ -54,11 +53,10 @@ function VideoCard({ item, label, onOpen }: { item: MotionItem; label: string; o
   const leave = () => { const v = ref.current; if (v) { v.pause() } }
 
   return (
-    <motion.button
-      className={g.card}
+    <motion.article
+      className={`${g.card} ${g.videoCard}`}
       onMouseEnter={enter}
       onMouseLeave={leave}
-      onClick={onOpen}
       initial={{ opacity: 0, y: 26, filter: 'blur(8px)' }}
       whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
       viewport={{ once: true, margin: '-60px' }}
@@ -67,12 +65,15 @@ function VideoCard({ item, label, onOpen }: { item: MotionItem; label: string; o
       <div className={g.badgeRow}>
         <span className={g.badge}>{label}</span>
       </div>
-      <video ref={ref} src={item.src} poster={item.poster} muted loop playsInline preload="metadata" />
-      <span className={g.overlay}>
+      <video ref={ref} src={item.src} muted loop playsInline preload="metadata" controls />
+      <button type="button" className={g.videoOpenButton} onClick={onOpen}>
+        <Play size={15} /> Open
+      </button>
+      <span className={`${g.overlay} ${g.videoOverlay}`}>
         <span className={g.playDot}><Play size={18} /></span>
         <span className={g.cardName}>{item.name || item.file}</span>
       </span>
-    </motion.button>
+    </motion.article>
   )
 }
 
@@ -327,7 +328,6 @@ export default function MotionGallery({ videos, images }: { videos: MotionItem[]
                       <motion.video 
                         key="video-media"
                         src={active[open].src}
-                        poster={active[open].poster} 
                         controls 
                         autoPlay 
                         loop 

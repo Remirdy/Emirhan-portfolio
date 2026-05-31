@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 // Always read the folder fresh so newly uploaded files appear without a rebuild.
 export const dynamic = 'force-dynamic'
 
-const VIDEO_RE = /\.(mp4|webm|mov|m4v)$/i
+const VIDEO_RE = /\.mp4$/i
 const IMAGE_RE = /\.(jpg|jpeg|png|webp|gif|avif)$/i
 
 function build(file: string, fallbackIndex: number): MotionItem {
@@ -38,13 +38,7 @@ function getMedia(): { videos: MotionItem[]; images: MotionItem[] } {
 
   const videos = files
     .filter((f) => VIDEO_RE.test(f))
-    .map((f, i) => {
-      const item = build(f, i)
-      const base = f.replace(VIDEO_RE, '')
-      // Still search for a poster if we need it
-      const poster = files.find((p) => IMAGE_RE.test(p) && p.replace(IMAGE_RE, '') === base)
-      return poster ? { ...item, poster: `/motion/${encodeURIComponent(poster)}` } : item
-    })
+    .map((f, i) => build(f, i))
     .sort(sortFn)
 
   const images = files
