@@ -49,12 +49,19 @@ function getSpecsForItem(item: MotionItem) {
 
 function VideoCard({ item, label, onOpen }: { item: MotionItem; label: string; onOpen: () => void }) {
   const ref = useRef<HTMLVideoElement>(null)
+  const [aspectRatio, setAspectRatio] = useState<string>('16 / 9')
   const enter = () => { const v = ref.current; if (v) { v.currentTime = 0; v.play().catch(() => {}) } }
   const leave = () => { const v = ref.current; if (v) { v.pause() } }
+  const setNativeAspect = () => {
+    const v = ref.current
+    if (!v?.videoWidth || !v.videoHeight) return
+    setAspectRatio(`${v.videoWidth} / ${v.videoHeight}`)
+  }
 
   return (
     <motion.article
       className={`${g.card} ${g.videoCard}`}
+      style={{ aspectRatio }}
       onMouseEnter={enter}
       onMouseLeave={leave}
       initial={{ opacity: 0, y: 26, filter: 'blur(8px)' }}
@@ -65,7 +72,17 @@ function VideoCard({ item, label, onOpen }: { item: MotionItem; label: string; o
       <div className={g.badgeRow}>
         <span className={g.badge}>{label}</span>
       </div>
-      <video ref={ref} src={item.src} muted loop playsInline preload="metadata" controls />
+      <video
+        ref={ref}
+        src={item.src}
+        muted
+        loop
+        playsInline
+        preload="metadata"
+        controls
+        data-native-cursor="true"
+        onLoadedMetadata={setNativeAspect}
+      />
       <button type="button" className={g.videoOpenButton} onClick={onOpen}>
         <Play size={15} /> Open
       </button>
@@ -332,6 +349,7 @@ export default function MotionGallery({ videos, images }: { videos: MotionItem[]
                         autoPlay 
                         loop 
                         playsInline
+                        data-native-cursor="true"
                         className={g.stageMediaContent}
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}

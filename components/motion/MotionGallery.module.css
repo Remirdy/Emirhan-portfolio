@@ -192,9 +192,16 @@
 .card video, .card img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
   display: block;
   background: #040806;
+}
+
+.card img {
+  object-fit: cover;
+}
+
+.card video {
+  object-fit: contain;
 }
 
 .card:hover {

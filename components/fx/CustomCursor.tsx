@@ -17,12 +17,17 @@ export default function CustomCursor() {
     const ringPos = { ...pos }
     let raf = 0
     let hovering = false
+    let nativeCursor = false
 
     const move = (e: MouseEvent) => {
       pos.x = e.clientX
       pos.y = e.clientY
-      if (dot.current) dot.current.style.transform = `translate3d(${pos.x}px, ${pos.y}px, 0) translate(-50%, -50%)`
       const t = e.target as HTMLElement
+      nativeCursor = !!t.closest('video, [data-native-cursor="true"]')
+      if (dot.current) {
+        dot.current.style.transform = `translate3d(${pos.x}px, ${pos.y}px, 0) translate(-50%, -50%)`
+        dot.current.style.opacity = nativeCursor ? '0' : '1'
+      }
       hovering = !!t.closest('a, button, [data-cursor="hover"]')
     }
 
@@ -32,7 +37,7 @@ export default function CustomCursor() {
       if (ring.current) {
         const scale = hovering ? 1.9 : 1
         ring.current.style.transform = `translate3d(${ringPos.x}px, ${ringPos.y}px, 0) translate(-50%, -50%) scale(${scale})`
-        ring.current.style.opacity = hovering ? '1' : '0.6'
+        ring.current.style.opacity = nativeCursor ? '0' : hovering ? '1' : '0.6'
       }
       raf = requestAnimationFrame(loop)
     }
