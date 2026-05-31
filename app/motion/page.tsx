@@ -14,15 +14,11 @@ export const dynamic = 'force-dynamic'
 const VIDEO_RE = /\.(mp4|webm|mov|m4v)$/i
 const IMAGE_RE = /\.(jpg|jpeg|png|webp|gif|avif)$/i
 
-function build(file: string, fallbackIndex: number, allFiles: string[]): MotionItem {
+function build(file: string, fallbackIndex: number): MotionItem {
   const isVideo = VIDEO_RE.test(file)
   const re = isVideo ? VIDEO_RE : IMAGE_RE
   const base = file.replace(re, '')
   const num = (file.match(/(\d+)/) || [])[1]
-  
-  // Find companion file of the opposite type
-  const oppositeRe = isVideo ? IMAGE_RE : VIDEO_RE
-  const companion = allFiles.find((f) => oppositeRe.test(f) && f.replace(oppositeRe, '') === base)
 
   return {
     file,
@@ -30,8 +26,6 @@ function build(file: string, fallbackIndex: number, allFiles: string[]): MotionI
     name: base.replace(/[_-]+/g, ' ').trim(),
     index: num ? parseInt(num, 10) : Number.MAX_SAFE_INTEGER - fallbackIndex,
     type: isVideo ? 'video' : 'image',
-    hasCompanion: !!companion,
-    companionSrc: companion ? `/motion/${encodeURIComponent(companion)}` : undefined
   }
 }
 
@@ -45,7 +39,7 @@ function getMedia(): { videos: MotionItem[]; images: MotionItem[] } {
   const videos = files
     .filter((f) => VIDEO_RE.test(f))
     .map((f, i) => {
-      const item = build(f, i, files)
+      const item = build(f, i)
       const base = f.replace(VIDEO_RE, '')
       // Still search for a poster if we need it
       const poster = files.find((p) => IMAGE_RE.test(p) && p.replace(IMAGE_RE, '') === base)
@@ -55,7 +49,7 @@ function getMedia(): { videos: MotionItem[]; images: MotionItem[] } {
 
   const images = files
     .filter((f) => IMAGE_RE.test(f))
-    .map((f, i) => build(f, i, files))
+    .map((f, i) => build(f, i))
     .sort(sortFn)
 
   return { videos, images }

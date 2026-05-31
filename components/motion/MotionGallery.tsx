@@ -4,7 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { 
   Play, X, ChevronLeft, ChevronRight, Clapperboard, Film, 
-  Image as ImageIcon, UploadCloud, Info, Sparkles, Sliders, PlayCircle, PauseCircle
+  Image as ImageIcon, UploadCloud, Info, PlayCircle, PauseCircle
 } from 'lucide-react'
 import g from './MotionGallery.module.css'
 
@@ -15,30 +15,25 @@ export type MotionItem = {
   index: number
   type: 'video' | 'image'
   poster?: string
-  hasCompanion?: boolean
-  companionSrc?: string
 }
 
-type Tab = 'video' | 'image'
+type MediaSection = 'video' | 'image'
 
 // Rich technical specification generator based on filename/type
 function getSpecsForItem(item: MotionItem) {
-  const isLinked = item.hasCompanion
-  const isVideo = item.type === 'video' || isLinked
+  const isVideo = item.type === 'video'
   
   if (item.name.toLowerCase().includes('example')) {
     return {
       title: item.name,
-      category: isLinked ? "PSD to AI Motion Studio" : (isVideo ? "Cinematic Motion Graphics" : "Static Layered PSD Design"),
-      tools: isLinked 
-        ? ["Photoshop", "After Effects", "Runway Gen-3", "Midjourney"]
-        : (isVideo ? ["After Effects", "Premiere Pro", "Luma Dream Machine"] : ["Photoshop", "Illustrator", "Midjourney"]),
+      category: isVideo ? "Cinematic Motion Graphics" : "Static Layered PSD Design",
+      tools: isVideo ? ["After Effects", "Premiere Pro", "Luma Dream Machine"] : ["Photoshop", "Illustrator", "Midjourney"],
       resolution: isVideo ? "1920x1080 (Cinematic HD)" : "3840x2160 (4K Ultra HD)",
       fps: isVideo ? "30 FPS" : "Static Art",
-      layers: isLinked ? "16 Separated Visual Layers" : "Flat Design",
-      details: isLinked 
-        ? "Original Photoshop document layered artwork brought to life using advanced AI image-to-motion parallax, volumetric lighting effects, and strict camera pan pacing."
-        : "Professional storyboard and asset design with complete layer hierarchies built for digital motion and campaign workflows."
+      layers: isVideo ? "Animated Composition" : "Layered Visual Design",
+      details: isVideo
+        ? "Motion asset produced as a standalone animated reel with camera movement, timing, depth and polished visual rhythm."
+        : "Static visual asset presented separately from motion reels so image work stays clear, inspectable and independent."
     }
   }
   
@@ -71,11 +66,6 @@ function VideoCard({ item, label, onOpen }: { item: MotionItem; label: string; o
     >
       <div className={g.badgeRow}>
         <span className={g.badge}>{label}</span>
-        {item.hasCompanion && (
-          <span className={g.linkedBadge}>
-            <Sparkles size={10} /> DUAL VIEW
-          </span>
-        )}
       </div>
       <video ref={ref} src={item.src} poster={item.poster} muted loop playsInline preload="metadata" />
       <span className={g.overlay}>
@@ -98,11 +88,6 @@ function ImageCard({ item, label, onOpen }: { item: MotionItem; label: string; o
     >
       <div className={g.badgeRow}>
         <span className={g.badge}>{label}</span>
-        {item.hasCompanion && (
-          <span className={g.linkedBadge}>
-            <Sparkles size={10} /> DUAL VIEW
-          </span>
-        )}
       </div>
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img src={item.src} alt={item.name || item.file} loading="lazy" />
@@ -116,19 +101,15 @@ function ImageCard({ item, label, onOpen }: { item: MotionItem; label: string; o
 
 export default function MotionGallery({ videos, images }: { videos: MotionItem[]; images: MotionItem[] }) {
   const total = videos.length + images.length
-  const initialTab: Tab = videos.length === 0 && images.length > 0 ? 'image' : 'video'
-  const [tab, setTab] = useState<Tab>(initialTab)
+  const [section, setSection] = useState<MediaSection>('video')
   
-  // Lightbox & Compare States
   const [open, setOpen] = useState<number | null>(null)
-  const [compareMode, setCompareMode] = useState<'static' | 'motion'>('motion')
 
-  // Slideshow States
   const [isSlideshowRunning, setIsSlideshowRunning] = useState(false)
   const [slideshowProgress, setSlideshowProgress] = useState(0)
 
-  const active = useMemo(() => (tab === 'video' ? videos : images), [tab, videos, images])
-  const has = active.length > 0
+  const active = useMemo(() => (section === 'video' ? videos : images), [section, videos, images])
+  const hasMedia = total > 0
 
   const close = useCallback(() => {
     setOpen(null)
@@ -139,16 +120,10 @@ export default function MotionGallery({ videos, images }: { videos: MotionItem[]
     setOpen((cur) => {
       if (cur === null) return null
       const nextIdx = (cur + dir + active.length) % active.length
-      // Reset compare mode default on load next
-      const nextItem = active[nextIdx]
-      setCompareMode(nextItem?.type === 'image' ? 'static' : 'motion')
       setSlideshowProgress(0)
       return nextIdx
     })
   }, [active])
-
-  // reset lightbox when switching tabs
-  useEffect(() => { setOpen(null) }, [tab])
 
   // Keyboard navigation
   useEffect(() => {
@@ -165,7 +140,6 @@ export default function MotionGallery({ videos, images }: { videos: MotionItem[]
 
   // Autoplay Slideshow Effect loop
   useEffect(() => {
-    let timer: NodeJS.Timeout | null = null
     let animationFrame: number | null = null
     let startTimestamp: number | null = null
     const duration = 8000 // 8s per slide
@@ -188,7 +162,6 @@ export default function MotionGallery({ videos, images }: { videos: MotionItem[]
     }
 
     return () => {
-      if (timer) clearTimeout(timer)
       if (animationFrame) cancelAnimationFrame(animationFrame)
     }
   }, [isSlideshowRunning, open, go])
@@ -202,18 +175,40 @@ export default function MotionGallery({ videos, images }: { videos: MotionItem[]
     return getSpecsForItem(active[open])
   }, [open, active])
 
-  const handleOpenItem = (idx: number) => {
-    const item = active[idx]
-    setCompareMode(item.type === 'image' ? 'static' : 'motion')
+  const handleOpenItem = (nextSection: MediaSection, idx: number) => {
+    setSection(nextSection)
+    setIsSlideshowRunning(false)
     setOpen(idx)
   }
 
   const handleToggleSlideshow = () => {
-    if (open === null && active.length > 0) {
-      handleOpenItem(0)
+    const defaultSection = videos.length > 0 ? 'video' : 'image'
+    const defaultItems = defaultSection === 'video' ? videos : images
+
+    if (open === null && defaultItems.length > 0) {
+      setSection(defaultSection)
+      setOpen(0)
     }
     setIsSlideshowRunning(!isSlideshowRunning)
   }
+
+  const renderEmpty = (type: MediaSection) => (
+    <section className={g.empty}>
+      <UploadCloud size={40} />
+      <h2>{type === 'video' ? 'No videos yet' : 'No images yet'}</h2>
+      <p>
+        Upload your {type === 'video' ? 'motion clips' : 'images'} to <code>public/motion/</code> named
+        <br />
+        <b>
+          {type === 'video'
+            ? 'Example_1.mp4, Example_2.mp4, Example_3.mp4 ...'
+            : 'Example_1.jpg, Example_2.png, Example_3.webp ...'}
+        </b>
+        <br />
+        They appear in this section automatically.
+      </p>
+    </section>
+  )
 
   return (
     <main className={g.page}>
@@ -222,30 +217,15 @@ export default function MotionGallery({ videos, images }: { videos: MotionItem[]
         <h1 className={g.title}>Creative <span>Motion</span></h1>
         <p className={g.lead}>
           Animating ready-made PSD compositions, adding parallax depth, and crafting modern motion graphics.
-          Explore my static layered designs alongside their animated motion counterparts in the tabs above.
+          Motion videos and static visuals are separated into their own sections for a cleaner portfolio flow.
         </p>
 
         <div className={g.headerActions}>
-          <div className={g.tabs} role="tablist">
-            <button
-              role="tab"
-              aria-selected={tab === 'video'}
-              className={`${g.tab} ${tab === 'video' ? g.tabActive : ''}`}
-              onClick={() => setTab('video')}
-            >
-              <Film size={15} /> Motion Videos <span className={g.count}>{videos.length}</span>
-            </button>
-            <button
-              role="tab"
-              aria-selected={tab === 'image'}
-              className={`${g.tab} ${tab === 'image' ? g.tabActive : ''}`}
-              onClick={() => setTab('image')}
-            >
-              <ImageIcon size={15} /> Static Designs <span className={g.count}>{images.length}</span>
-            </button>
+          <div className={g.summaryStats} aria-label="Motion gallery summary">
+            <span><Film size={15} /> {videos.length} Motion Videos</span>
+            <span><ImageIcon size={15} /> {images.length} Static Designs</span>
           </div>
 
-          {/* Slideshow button */}
           <button className={g.slideshowHeaderBtn} onClick={handleToggleSlideshow}>
             {isSlideshowRunning ? <PauseCircle size={16} /> : <PlayCircle size={16} />}
             <span>{isSlideshowRunning ? 'PAUSE REEL' : 'PLAY CINE-REEL'}</span>
@@ -253,30 +233,52 @@ export default function MotionGallery({ videos, images }: { videos: MotionItem[]
         </div>
       </header>
 
-      {has ? (
-        <section className={g.grid}>
-          {active.map((it, i) =>
-            it.type === 'video' ? (
-              <VideoCard key={it.file} item={it} label={labelFor(it, i)} onOpen={() => handleOpenItem(i)} />
-            ) : (
-              <ImageCard key={it.file} item={it} label={labelFor(it, i)} onOpen={() => handleOpenItem(i)} />
-            )
-          )}
-        </section>
+      {hasMedia ? (
+        <>
+          <section className={g.mediaSection} aria-labelledby="motion-videos-title">
+            <div className={g.sectionHead}>
+              <div>
+                <span className={g.sectionEyebrow}><Film size={14} /> Motion Videos</span>
+                <h2 id="motion-videos-title">Animated motion reels</h2>
+              </div>
+              <span className={g.sectionCount}>{videos.length} items</span>
+            </div>
+
+            {videos.length > 0 ? (
+              <div className={g.grid}>
+                {videos.map((it, i) => (
+                  <VideoCard key={it.file} item={it} label={labelFor(it, i)} onOpen={() => handleOpenItem('video', i)} />
+                ))}
+              </div>
+            ) : renderEmpty('video')}
+          </section>
+
+          <section className={g.mediaSection} aria-labelledby="static-images-title">
+            <div className={g.sectionHead}>
+              <div>
+                <span className={g.sectionEyebrow}><ImageIcon size={14} /> Static Designs</span>
+                <h2 id="static-images-title">Image and design work</h2>
+              </div>
+              <span className={g.sectionCount}>{images.length} items</span>
+            </div>
+
+            {images.length > 0 ? (
+              <div className={g.grid}>
+                {images.map((it, i) => (
+                  <ImageCard key={it.file} item={it} label={labelFor(it, i)} onOpen={() => handleOpenItem('image', i)} />
+                ))}
+              </div>
+            ) : renderEmpty('image')}
+          </section>
+        </>
       ) : (
         <section className={g.empty}>
           <UploadCloud size={40} />
-          <h2>{tab === 'video' ? 'No videos yet' : 'No images yet'}</h2>
+          <h2>No motion media yet</h2>
           <p>
-            Upload your {tab === 'video' ? 'motion clips' : 'images'} to <code>public/motion/</code> named
+            Upload videos and images to <code>public/motion/</code>.
             <br />
-            <b>
-              {tab === 'video'
-                ? 'Example_1.mp4, Example_2.mp4, Example_3.mp4 …'
-                : 'Example_1.jpg, Example_2.png, Example_3.webp …'}
-            </b>
-            <br />
-            They appear here automatically — no limit.
+            Video and image files will appear in separate sections automatically.
           </p>
         </section>
       )}
@@ -312,38 +314,19 @@ export default function MotionGallery({ videos, images }: { videos: MotionItem[]
               </button>
             )}
 
-            {/* Main Stage Grid (Dual split panel: Media Left, Specs Right) */}
+            {/* Main Stage Grid (Media Left, Specs Right) */}
             <motion.div className={g.showcaseContainer} onClick={(e) => e.stopPropagation()}
               key={open} initial={{ scale: 0.96, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ duration: 0.3 }}>
               
               {/* LEFT SIDE: Media Visual Player */}
               <div className={g.visualPanel}>
                 
-                {/* Linked Dual View Toggle */}
-                {active[open].hasCompanion && (
-                  <div className={g.splitViewToggleRow}>
-                    <button 
-                      onClick={() => setCompareMode('static')} 
-                      className={`${g.toggleBtn} ${compareMode === 'static' ? g.toggleBtnActive : ''}`}
-                    >
-                      <ImageIcon size={14} /> STATIC DESIGN (PSD)
-                    </button>
-                    <button 
-                      onClick={() => setCompareMode('motion')} 
-                      className={`${g.toggleBtn} ${compareMode === 'motion' ? g.toggleBtnActive : ''}`}
-                    >
-                      <Film size={14} /> MOTION REEL (AI)
-                    </button>
-                  </div>
-                )}
-
-                {/* Media Render Box */}
                 <div className={g.mediaStage}>
                   <AnimatePresence mode="wait">
-                    {compareMode === 'motion' ? (
+                    {active[open].type === 'video' ? (
                       <motion.video 
                         key="video-media"
-                        src={active[open].type === 'video' ? active[open].src : active[open].companionSrc} 
+                        src={active[open].src}
                         poster={active[open].poster} 
                         controls 
                         autoPlay 
@@ -358,7 +341,7 @@ export default function MotionGallery({ videos, images }: { videos: MotionItem[]
                     ) : (
                       <motion.img 
                         key="image-media"
-                        src={active[open].type === 'image' ? active[open].src : active[open].companionSrc} 
+                        src={active[open].src}
                         alt={active[open].name || active[open].file}
                         className={g.stageMediaContent}
                         initial={{ opacity: 0 }}
