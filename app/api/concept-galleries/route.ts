@@ -20,7 +20,7 @@ const GALLERY_DIR = path.join(PUBLIC_DIR, 'concept-galleries')
 const LEGACY_CATEGORIES = [
   {
     slug: 'tarcin-luna',
-    title: 'Tarçın & Luna',
+    title: 'Tarcin & Luna',
     dir: path.join(PUBLIC_DIR, 'tarcin-luna'),
     urlBase: '/tarcin-luna',
   },

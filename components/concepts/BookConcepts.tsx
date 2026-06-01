@@ -182,18 +182,17 @@ export default function BookConcepts() {
     <section id="concepts" className={s.conceptsSection}>
       <div className={s.header}>
         <div>
-          <div className={s.kicker}><BookOpen /> Storybook portfolio module</div>
+          <div className={s.kicker}><BookOpen /> Illustration portfolio</div>
           <h2>Children&apos;s Book Concepts</h2>
           <p>
-            The reference board is treated as an art-direction brief, not as a placed asset. Each story becomes its own
-            portfolio-ready concept with visual language, palette, character notes, props and a 3D production path.
+            A collection of soft, story-led children&apos;s book ideas with characters, palettes, props and atmosphere.
           </p>
         </div>
         <div className={s.pipeline}>
-          <span><Palette /> Concept art</span>
-          <span><Box /> Image-to-3D</span>
-          <span><Cuboid /> Colored GLB</span>
-          <span><Camera /> Book mockup</span>
+          <span><Palette /> Palette</span>
+          <span><Box /> Characters</span>
+          <span><Cuboid /> Props</span>
+          <span><Camera /> Pages</span>
         </div>
       </div>
 
@@ -210,17 +209,17 @@ export default function BookConcepts() {
                 </Suspense>
                 <OrbitControls enablePan={false} enableZoom={false} minPolarAngle={1.05} maxPolarAngle={1.65} />
               </Canvas>
-              <span>Animated GLB</span>
+              <span>Book preview</span>
             </div>
           )}
           <TarcinLunaBook />
         </div>
         <div>
-          <div className={s.featureLabel}><Sparkles /> Professional direction</div>
-          <h3>From single mood board to ten production-ready worlds</h3>
+          <div className={s.featureLabel}><Sparkles /> Story collection</div>
+          <h3>Gentle worlds for illustrated children&apos;s books</h3>
           <p>
-            Bu bölüm çocuk kitabı illüstrasyon portfolyosu gibi çalışır: her kart ayrı bir mini pitch, görsel evren,
-            renk sistemi, karakter/prop paketi ve ileride Blender MCP ile 3D kitap sahnesine taşınabilecek asset notları içerir.
+            Tarcin & Luna and the other story ideas are presented as small book worlds built around warm palettes,
+            charming characters and soft fairytale scenes.
           </p>
         </div>
       </div>

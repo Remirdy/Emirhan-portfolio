@@ -30,13 +30,13 @@ type NormalizedGalleryCategory = Omit<GalleryCategory, 'images'> & {
 const FALLBACK_CATEGORIES: GalleryCategory[] = [
   {
     slug: 'tarcin-luna',
-    title: 'Tarçın & Luna',
+    title: 'Tarcin & Luna',
     images: [
-      { img: '/tarcin-luna/1.png', title: 'Tarçın & Luna', sub: '1. PNG artwork', glow: '#f6a54c' },
-      { img: '/tarcin-luna/2.png', title: 'Tarçın & Luna', sub: '2. PNG artwork', glow: '#d8753c' },
-      { img: '/tarcin-luna/3.png', title: 'Tarçın & Luna', sub: '3. PNG artwork', glow: '#2a4a9a' },
-      { img: '/tarcin-luna/4.png', title: 'Tarçın & Luna', sub: '4. PNG artwork', glow: '#1a5a50' },
-      { img: '/tarcin-luna/5.png', title: 'Tarçın & Luna', sub: '5. PNG artwork', glow: '#3a2a7a' },
+      { img: '/tarcin-luna/1.png', title: 'Tarcin & Luna', sub: '1. PNG artwork', glow: '#f6a54c' },
+      { img: '/tarcin-luna/2.png', title: 'Tarcin & Luna', sub: '2. PNG artwork', glow: '#d8753c' },
+      { img: '/tarcin-luna/3.png', title: 'Tarcin & Luna', sub: '3. PNG artwork', glow: '#2a4a9a' },
+      { img: '/tarcin-luna/4.png', title: 'Tarcin & Luna', sub: '4. PNG artwork', glow: '#1a5a50' },
+      { img: '/tarcin-luna/5.png', title: 'Tarcin & Luna', sub: '5. PNG artwork', glow: '#3a2a7a' },
     ],
   },
 ]
