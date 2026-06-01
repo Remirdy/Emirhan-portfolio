@@ -1,10 +1,10 @@
 @import "tailwindcss";
 
 :root {
-  --accent: #00eaff;
-  --accent-2: #7c3cff;
-  --bg: #03070d;
-  --panel: rgba(5, 12, 20, 0.88);
+  --accent: #f3c879;
+  --accent-2: #8fd3c7;
+  --bg: #0c1014;
+  --panel: rgba(18, 21, 24, 0.9);
 }
 
 * { box-sizing: border-box; }
@@ -17,10 +17,9 @@ body {
   color: #ffffff;
   font-family: var(--font-inter), system-ui, sans-serif;
   background:
-    radial-gradient(circle at 78% 8%, rgba(0, 234, 255, 0.22), transparent 28rem),
-    radial-gradient(circle at 12% 18%, rgba(124, 60, 255, 0.12), transparent 22rem),
-    radial-gradient(circle at 70% 86%, rgba(0, 234, 255, 0.09), transparent 24rem),
-    linear-gradient(180deg, #02050a 0%, #06101a 48%, #02050a 100%);
+    linear-gradient(115deg, rgba(243, 200, 121, 0.12), transparent 32rem),
+    linear-gradient(245deg, rgba(143, 211, 199, 0.1), transparent 34rem),
+    linear-gradient(180deg, #101419 0%, #171715 46%, #090d11 100%);
   overflow-x: hidden;
 }
 
@@ -33,8 +32,8 @@ body::before {
   z-index: -2;
   pointer-events: none;
   background:
-    linear-gradient(rgba(0, 234, 255, 0.035) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0, 234, 255, 0.035) 1px, transparent 1px);
+    linear-gradient(rgba(243, 200, 121, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(143, 211, 199, 0.03) 1px, transparent 1px);
   background-size: 52px 52px;
   mask-image: radial-gradient(circle at center, black, transparent 78%);
   animation: gridDrift 18s linear infinite;
@@ -47,8 +46,8 @@ body::after {
   z-index: -1;
   pointer-events: none;
   background:
-    radial-gradient(circle at 50% 0%, rgba(255,255,255,0.08), transparent 20rem),
-    linear-gradient(90deg, transparent, rgba(0,234,255,0.04), transparent);
+    linear-gradient(180deg, rgba(255,255,255,0.06), transparent 22rem),
+    linear-gradient(90deg, transparent, rgba(243,200,121,0.035), transparent);
   mix-blend-mode: screen;
   animation: ambientSweep 9s ease-in-out infinite alternate;
 }
@@ -218,8 +217,8 @@ button:hover, a:hover { transform: translateY(-1px); }
 
 body::after {
   background:
-    radial-gradient(circle at 50% 0%, rgba(255,255,255,0.08), transparent 20rem),
-    linear-gradient(90deg, transparent, rgba(0,234,255,0.04), transparent),
+    linear-gradient(180deg, rgba(255,255,255,0.08), transparent 20rem),
+    linear-gradient(90deg, transparent, rgba(243,200,121,0.04), transparent),
     url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
   animation: ambientSweep 9s ease-in-out infinite alternate, grainShift 8s steps(5) infinite;
 }
@@ -230,8 +229,8 @@ body::after {
   z-index: -4;
   pointer-events: none;
   background:
-    radial-gradient(40% 40% at 30% 30%, rgba(0,234,255,0.14), transparent 70%),
-    radial-gradient(45% 45% at 75% 60%, rgba(124,60,255,0.16), transparent 72%);
+    linear-gradient(115deg, rgba(243,200,121,0.12), transparent 58%),
+    linear-gradient(245deg, rgba(143,211,199,0.14), transparent 64%);
   filter: blur(40px);
   animation: auroraFloat 16s ease-in-out infinite;
 }
