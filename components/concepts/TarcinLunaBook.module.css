@@ -1,0 +1,354 @@
+/* ── Outer wrapper ────────────────────────────────────────────────────────── */
+.wrap {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+  padding: 24px 20px 20px;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* Ambient colour-matched glow behind the book */
+.glow {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border-radius: 28px;
+  transition: background 0.7s ease;
+}
+
+/* Diffuse shadow cast below the book */
+.bookShadow {
+  position: absolute;
+  bottom: 68px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 280px;
+  height: 36px;
+  background: radial-gradient(ellipse, rgba(0, 0, 0, 0.6) 0%, transparent 70%);
+  filter: blur(14px);
+  pointer-events: none;
+}
+
+/* ── Book shell ───────────────────────────────────────────────────────────── */
+.book {
+  position: relative;
+  display: flex;
+  align-items: stretch;
+  height: 360px;
+  filter: drop-shadow(0 22px 40px rgba(0, 0, 0, 0.5));
+}
+
+/* Page-stack slices (read / remaining sides) */
+.leftStack {
+  position: relative;
+  display: flex;
+  flex-direction: row-reverse;
+  align-items: stretch;
+  gap: 1.5px;
+  padding-right: 3px;
+}
+.rightStack {
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  gap: 1.5px;
+  padding-left: 3px;
+}
+.stackSlice {
+  width: 2.5px;
+  height: 100%;
+  border-radius: 0.5px;
+  background: linear-gradient(
+    180deg,
+    #c8a462 0%,
+    #7a5220 40%,
+    #c8a462 72%,
+    #5a3c14 100%
+  );
+}
+
+/* Spine */
+.spine {
+  width: 20px;
+  flex-shrink: 0;
+  background: linear-gradient(
+    90deg,
+    #0d0804 0%,
+    #2e1e08 30%,
+    #4a2e0e 50%,
+    #2e1e08 70%,
+    #0d0804 100%
+  );
+  border-radius: 5px 0 0 5px;
+  box-shadow:
+    inset -3px 0 10px rgba(0, 0, 0, 0.55),
+    2px 0 10px rgba(0, 0, 0, 0.35);
+  z-index: 5;
+}
+
+/* ── Page area ────────────────────────────────────────────────────────────── */
+.pageArea {
+  position: relative;
+  width: 248px;
+  height: 360px;
+  overflow: hidden;
+  border-radius: 0 12px 12px 0;
+  background: #1c1208;
+  box-shadow:
+    inset -4px 0 14px rgba(0, 0, 0, 0.4),
+    0 0 0 1px rgba(255, 215, 140, 0.1);
+  /* Needs preserve-3d so the flip leaf inherits the 3D context */
+  transform-style: preserve-3d;
+}
+
+.pageImg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  border-radius: 0 12px 12px 0;
+}
+
+/* ── Flip leaf ────────────────────────────────────────────────────────────── */
+.leaf {
+  position: absolute;
+  inset: 0;
+  transform-origin: left center;
+  transform-style: preserve-3d;
+  z-index: 4;
+}
+
+.leafFront,
+.leafBack {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  border-radius: 0 12px 12px 0;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+.leafBack {
+  transform: rotateY(180deg);
+}
+
+/* Dynamic shadow that simulates the page curling toward the light */
+.leafShadow {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    rgba(0, 0, 0, 0.72) 0%,
+    rgba(0, 0, 0, 0.42) 25%,
+    rgba(0, 0, 0, 0.12) 55%,
+    transparent 75%
+  );
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+/* ── Caption overlay ──────────────────────────────────────────────────────── */
+.caption {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 52px 14px 13px;
+  background: linear-gradient(0deg, rgba(0, 0, 0, 0.78) 0%, transparent 100%);
+  border-radius: 0 0 12px 0;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  pointer-events: none;
+}
+.caption strong {
+  color: #ffe4a8;
+  font-size: 13px;
+  font-weight: 900;
+  letter-spacing: -0.01em;
+  line-height: 1.1;
+}
+.caption span {
+  color: rgba(255, 255, 255, 0.62);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+}
+
+/* Page number */
+.pageNum {
+  position: absolute;
+  top: 12px;
+  right: 14px;
+  z-index: 6;
+  color: rgba(255, 228, 168, 0.7);
+  font-size: 12px;
+  font-weight: 950;
+  letter-spacing: 0.05em;
+  pointer-events: none;
+}
+.pageNum em {
+  font-style: normal;
+  opacity: 0.52;
+  margin-left: 2px;
+}
+
+/* Corner curl hint — clickable bottom-right triangle */
+.curlHint {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 48px;
+  height: 48px;
+  cursor: pointer;
+  z-index: 6;
+  border: none;
+  background: transparent;
+  clip-path: polygon(100% 0, 100% 100%, 0 100%);
+  transition: opacity 0.2s;
+  opacity: 0;
+  border-radius: 0 0 12px 0;
+}
+.pageArea:hover .curlHint {
+  opacity: 1;
+  background: linear-gradient(225deg, rgba(255, 220, 140, 0.28), transparent);
+}
+
+/* ── Navigation ───────────────────────────────────────────────────────────── */
+.nav {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.categoryTabs {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  max-width: min(100%, 420px);
+}
+
+.categoryBtn {
+  border: 1px solid rgba(234, 190, 112, 0.28);
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.28);
+  color: rgba(255, 228, 168, 0.72);
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: 850;
+  line-height: 1;
+  padding: 8px 11px;
+  transition: background 0.2s, border-color 0.2s, color 0.2s;
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+}
+
+.categoryBtn:hover,
+.categoryBtnActive {
+  background: rgba(234, 190, 112, 0.18);
+  border-color: rgba(234, 190, 112, 0.62);
+  color: #ffe4a8;
+}
+
+.navBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: 1px solid rgba(234, 190, 112, 0.32);
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.35);
+  color: #f3c879;
+  cursor: pointer;
+  transition: background 0.22s, border-color 0.22s, transform 0.18s;
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  padding: 0;
+}
+.navBtn svg { display: block; }
+.navBtn:hover:not(:disabled) {
+  background: rgba(234, 190, 112, 0.18);
+  border-color: rgba(234, 190, 112, 0.65);
+  transform: scale(1.1);
+}
+.navBtn:disabled {
+  opacity: 0.25;
+  cursor: not-allowed;
+}
+
+.dots {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(243, 200, 121, 0.42);
+  background: transparent;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s, transform 0.2s;
+  padding: 0;
+}
+.dot:hover { border-color: rgba(243, 200, 121, 0.8); }
+.dotActive {
+  background: #f3c879;
+  border-color: #f3c879;
+  transform: scale(1.25);
+}
+
+/* ── Sparkle decorations ──────────────────────────────────────────────────── */
+.sparkles {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  border-radius: 28px;
+}
+.spark {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: #ffe4a3;
+  box-shadow: 0 0 8px 2px rgba(255, 228, 163, 0.55);
+  animation: twinkle 2.8s ease-in-out infinite;
+  animation-delay: calc(var(--si) * 0.28s);
+}
+
+/* Positions for 10 sparks */
+.spark:nth-child(1)  { left:  8%; top: 12% }
+.spark:nth-child(2)  { left: 88%; top:  8% }
+.spark:nth-child(3)  { left: 18%; top: 82% }
+.spark:nth-child(4)  { left: 76%; top: 78% }
+.spark:nth-child(5)  { left: 50%; top:  6% }
+.spark:nth-child(6)  { left:  4%; top: 50% }
+.spark:nth-child(7)  { left: 94%; top: 44% }
+.spark:nth-child(8)  { left: 36%; top: 92% }
+.spark:nth-child(9)  { left: 64%; top: 22% }
+.spark:nth-child(10) { left: 22%; top: 36% }
+
+@keyframes twinkle {
+  0%, 100% { opacity: 0; transform: scale(0.6); }
+  50%       { opacity: 1; transform: scale(1.2); }
+}
+
+/* ── Responsive ───────────────────────────────────────────────────────────── */
+@media (max-width: 640px) {
+  .book   { height: 300px; }
+  .pageArea { width: 206px; height: 300px; }
+}

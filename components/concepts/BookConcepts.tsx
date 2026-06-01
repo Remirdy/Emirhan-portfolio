@@ -7,6 +7,7 @@ import { Canvas } from '@react-three/fiber'
 import { Environment, Float, OrbitControls, useGLTF } from '@react-three/drei'
 import { BookOpen, Box, Camera, Cuboid, Palette, Sparkles } from 'lucide-react'
 import TiltCard from '@/components/fx/TiltCard'
+import TarcinLunaBook from './TarcinLunaBook'
 import s from './BookConcepts.module.css'
 
 const ENABLE_3D_CONCEPT_PREVIEW = false
@@ -212,15 +213,7 @@ export default function BookConcepts() {
               <span>Animated GLB</span>
             </div>
           )}
-          <div className={s.bookMockup} aria-hidden>
-            <div className={s.bookCover}>
-              <span>Portfolio Book</span>
-              <strong>Concept Bible</strong>
-            </div>
-            <div className={s.bookPage}>
-              <ConceptIllustration concept={concepts[0]} />
-            </div>
-          </div>
+          <TarcinLunaBook />
         </div>
         <div>
           <div className={s.featureLabel}><Sparkles /> Professional direction</div>
