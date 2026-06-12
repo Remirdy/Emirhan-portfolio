@@ -2,7 +2,7 @@
 
 import React, { useRef, useState, useEffect, useCallback, useMemo } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import { Html } from '@react-three/drei';
+import { Html, useGLTF } from '@react-three/drei';
 import * as THREE from 'three';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
@@ -528,11 +528,28 @@ function PremiumBakery({ isFever, hasVipLounge, hasDriveThru }: { isFever: boole
   );
 }
 
+// ==================== MCP FURNITURE PREVIEW (live from BlenderMCP) ====================
+function MCPBakeryFurniture() {
+  const { scene } = useGLTF('/models/donuttycoon_bakery_furniture.glb')
+  // Positioned as a side display / proof that the MCP pack integrates directly into the game
+  return (
+    <group position={[13.8, 0.02, -11.2]} rotation={[0, -0.55, 0]} scale={0.55}>
+      <primitive object={scene} />
+      <Html position={[0, 3.8, 0]} style={{ pointerEvents: 'none' }}>
+        <div className="px-3 py-1 rounded-full bg-black/70 border border-amber-400/40 text-amber-300 text-[10px] font-black tracking-[1px] whitespace-nowrap shadow-xl backdrop-blur">
+          BLENDER MCP • BAKERY FURNITURE
+        </div>
+      </Html>
+    </group>
+  )
+}
+
 // ==================== SCENE ====================
 function Scene({ customers, employees, floatingTexts, serveRange, onServe, isFever, playerSpeed, currentTime, hasVipLounge, hasDriveThru }: { customers: Customer[], employees: Employee[], floatingTexts: FloatingText[], serveRange: number, onServe: (id: number, pos: THREE.Vector3) => void, isFever: boolean, playerSpeed: number, currentTime: number, hasVipLounge: boolean, hasDriveThru: boolean }) {
   return (
     <>
       <PremiumBakery isFever={isFever} hasVipLounge={hasVipLounge} hasDriveThru={hasDriveThru} />
+      <MCPBakeryFurniture />
       <Particles isPlaying={isFever} count={100} color="#ff00ff" />
 
       <PlayerCharacter 
@@ -642,23 +659,62 @@ export default function DonutTycoon() {
   // Prestige multiplier (1 + prestigePoints * 0.5)
   const prestigeMultiplier = 1 + (prestigePoints * 0.5);
 
-  // --- Audio System (Placeholder) ---
+  // --- Audio System (Web Audio beeps - no external files needed) ---
   const [audioEnabled, setAudioEnabled] = useState(false);
-  const bgmRef = useRef<HTMLAudioElement | null>(null);
-  useEffect(() => {
-      // Setup placeholder Audio elements
-      bgmRef.current = new Audio('/sounds/bgm.mp3');
-      bgmRef.current.loop = true;
-      bgmRef.current.volume = 0.3;
-  }, []);
-  const toggleAudio = () => {
-      if (audioEnabled) { bgmRef.current?.pause(); setAudioEnabled(false); } 
-      else { bgmRef.current?.play().catch(()=>console.log("Audio not found")); setAudioEnabled(true); }
+  const audioCtxRef = useRef<AudioContext | null>(null);
+
+  const getAudioCtx = () => {
+    if (!audioCtxRef.current) {
+      audioCtxRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
+    }
+    return audioCtxRef.current;
   };
+
+  const playTone = (freq: number, duration: number, type: OscillatorType = 'sine', volume = 0.2) => {
+    try {
+      const ctx = getAudioCtx();
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      const filter = ctx.createBiquadFilter();
+      osc.type = type;
+      osc.frequency.value = freq;
+      filter.type = 'lowpass';
+      filter.frequency.value = 1200;
+      gain.gain.value = volume;
+      const now = ctx.currentTime;
+      gain.gain.setValueAtTime(volume, now);
+      gain.gain.linearRampToValueAtTime(0.0001, now + duration);
+      osc.connect(filter);
+      filter.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(now);
+      osc.stop(now + duration + 0.05);
+    } catch {}
+  };
+
+  const toggleAudio = () => {
+    const next = !audioEnabled;
+    setAudioEnabled(next);
+    if (next) {
+      // brief welcome blip
+      setTimeout(() => { playTone(660, 0.12, 'sine', 0.15); }, 10);
+    }
+  };
+
   const playSfx = useCallback((type: 'coin' | 'level' | 'fever') => {
-      if (!audioEnabled) return;
-      // In a real app, load actual mp3s. Here we just simulate logging or use a base64 tiny beep
-      // For now, we will rely on visual feedback mostly, audio hooks are ready.
+    if (!audioEnabled) return;
+    if (type === 'coin') {
+      playTone(880, 0.08, 'square', 0.18);
+      setTimeout(() => playTone(1180, 0.06, 'square', 0.12), 70);
+    } else if (type === 'level') {
+      playTone(523, 0.1, 'sine', 0.22);
+      setTimeout(() => playTone(659, 0.1, 'sine', 0.2), 90);
+      setTimeout(() => playTone(784, 0.18, 'sine', 0.18), 180);
+    } else if (type === 'fever') {
+      playTone(220, 0.2, 'sawtooth', 0.15);
+      setTimeout(() => playTone(330, 0.25, 'sawtooth', 0.12), 60);
+      setTimeout(() => playTone(440, 0.3, 'sawtooth', 0.1), 140);
+    }
   }, [audioEnabled]);
 
   // --- Entities ---
@@ -997,7 +1053,7 @@ export default function DonutTycoon() {
 
   // Initial load
   useEffect(() => {
-    // Pre-load a human.glb if needed
+    // Audio is now Web Audio API (no assets). Game is fully procedural.
   }, []);
 
   return (
@@ -1225,3 +1281,6 @@ export default function DonutTycoon() {
     </div>
   );
 }
+
+// Preload the MCP-generated bakery furniture so it appears instantly in the game
+useGLTF.preload('/models/donuttycoon_bakery_furniture.glb')

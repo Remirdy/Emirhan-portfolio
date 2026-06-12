@@ -39,3 +39,7 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Large archived assets (moved out of main public to keep repo lean)
+public/_archive/*
+!public/_archive/README.md

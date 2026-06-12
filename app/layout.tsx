@@ -5,6 +5,7 @@ import Navbar from '@/components/Navbar'
 import ScrollProgress from '@/components/fx/ScrollProgress'
 import CustomCursor from '@/components/fx/CustomCursor'
 import AuroraBackground from '@/components/fx/AuroraBackground'
+import Footer from '@/components/Footer'
 
 const inter = Inter({ 
   subsets: ['latin'], 
@@ -40,6 +41,7 @@ export default function RootLayout({
         <CustomCursor />
         <Navbar />
         {children}
+        <Footer />
       </body>
     </html>
   )
