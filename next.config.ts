@@ -1,10 +1,8 @@
-import type { NextConfig } from "next";
+import type { NextConfig } from 'next'
 
 const nextConfig: NextConfig = {
-  typescript: {
-    // Vercel build should not fail on strict third-party animation variant typings.
-    ignoreBuildErrors: true,
-  },
-};
+  turbopack: { root: process.cwd() },
+  outputFileTracingRoot: process.cwd(),
+}
 
-export default nextConfig;
+export default nextConfig

@@ -1,27 +1,19 @@
 import type { Metadata } from 'next'
-import { Inter, Space_Grotesk } from 'next/font/google'
+import localFont from 'next/font/local'
 import './globals.css'
 import Navbar from '@/components/Navbar'
-import ScrollProgress from '@/components/fx/ScrollProgress'
-import CustomCursor from '@/components/fx/CustomCursor'
-import AuroraBackground from '@/components/fx/AuroraBackground'
 import Footer from '@/components/Footer'
 
-const inter = Inter({ 
-  subsets: ['latin'], 
-  variable: '--font-inter',
-  weight: ['400', '500', '600', '700']
-})
-
-const spaceGrotesk = Space_Grotesk({ 
-  subsets: ['latin'], 
-  variable: '--font-space-grotesk',
-  weight: ['500', '600', '700']
-})
+const inter = localFont({ src: './fonts/DMSans.ttf', variable: '--font-inter', display: 'swap', weight: '100 1000' })
+const spaceGrotesk = localFont({ src: './fonts/Syne.ttf', variable: '--font-display', display: 'swap', weight: '400 800' })
+const serif = localFont({ src: [
+  { path: './fonts/InstrumentSerif-Regular.ttf', weight: '400', style: 'normal' },
+  { path: './fonts/InstrumentSerif-Italic.ttf', weight: '400', style: 'italic' },
+], variable: '--font-serif', display: 'swap' })
 
 export const metadata: Metadata = {
-  title: 'Emirhan Doygun | Game Developer & AI Creative Technologist',
-  description: 'Portfolio of Emirhan Doygun — Game Developer, AI Creative Technologist, and Computer Engineering Student based in Istanbul. Building playful digital experiences with Unity, C#, motion design and AI-assisted visuals.',
+  title: 'Emirhan Doygun — Games, Motion & Creative Tools',
+  description: 'I’m Emirhan, a developer and Computer Engineering student in Istanbul. Explore my Unity games, motion work, creative tools and experiments.',
   icons: {
     icon: '/favicon.ico',
   },
@@ -33,12 +25,8 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" className={`${inter.variable} ${spaceGrotesk.variable}`}>
-      <body className="bg-[#050505] text-white antialiased">
-        <div className="fx-aurora" aria-hidden />
-        <AuroraBackground />
-        <ScrollProgress />
-        <CustomCursor />
+    <html lang="en" className={`${inter.variable} ${spaceGrotesk.variable} ${serif.variable}`}>
+      <body className="antialiased">
         <Navbar />
         {children}
         <Footer />

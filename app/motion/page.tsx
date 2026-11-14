@@ -5,10 +5,9 @@ import MotionGallery, { type MotionItem } from '@/components/motion/MotionGaller
 
 export const metadata: Metadata = {
   title: 'Motion Reel | Emirhan Doygun',
-  description: 'Motion graphics & image-to-motion showreel — animated PSD work, AI motion enhancement and cinematic visual production.',
+  description: 'Motion graphics & image-to-motion showreel — animated PSD work, layered PSD animation and visual production.',
 }
 
-// Always read the folder fresh so newly uploaded files appear without a rebuild.
 export const dynamic = 'force-dynamic'
 
 const VIDEO_RE = /\.mp4$/i

@@ -1,12 +1,9 @@
 'use client'
 
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
-import { 
-  Play, X, ChevronLeft, ChevronRight, Clapperboard, Film, 
-  Image as ImageIcon, UploadCloud, Info, PlayCircle, PauseCircle
-} from 'lucide-react'
-import g from './MotionGallery.module.css'
+import { useEffect, useRef, useState } from 'react'
+import { MotionConfig, motion } from 'framer-motion'
+import { ArrowLeft, ArrowUpRight, ChevronLeft, ChevronRight, Image as ImageIcon, Play, X } from 'lucide-react'
+import s from './MotionGallery.module.css'
 
 export type MotionItem = {
   file: string
@@ -16,421 +13,64 @@ export type MotionItem = {
   type: 'video' | 'image'
 }
 
-type MediaSection = 'video' | 'image'
+function MediaDialog({ item, position, count, onClose, onMove }: { item: MotionItem; position: number; count: number; onClose: () => void; onMove: (direction: number) => void }) {
+  const dialog = useRef<HTMLDialogElement>(null)
+  const closeButton = useRef<HTMLButtonElement>(null)
 
-// Rich technical specification generator based on filename/type
-function getSpecsForItem(item: MotionItem) {
-  const isVideo = item.type === 'video'
-  
-  if (item.name.toLowerCase().includes('example')) {
-    return {
-      title: item.name,
-      category: isVideo ? "Cinematic Motion Graphics" : "Static Layered PSD Design",
-      tools: isVideo ? ["After Effects", "Premiere Pro", "Luma Dream Machine"] : ["Photoshop", "Illustrator", "Midjourney"],
-      resolution: isVideo ? "1920x1080 (Cinematic HD)" : "3840x2160 (4K Ultra HD)",
-      fps: isVideo ? "30 FPS" : "Static Art",
-      layers: isVideo ? "Animated Composition" : "Layered Visual Design",
-      details: isVideo
-        ? "Motion asset produced as a standalone animated reel with camera movement, timing, depth and polished visual rhythm."
-        : "Static visual asset presented separately from motion reels so image work stays clear, inspectable and independent."
-    }
-  }
-  
-  return {
-    title: item.name,
-    category: isVideo ? "Creative Motion Work" : "Visual Brand Design",
-    tools: ["After Effects", "Photoshop", "Illustrator"],
-    resolution: isVideo ? "1920x1080" : "2048x2048",
-    fps: isVideo ? "24 FPS" : "Static Art",
-    layers: "Multi-layered Asset",
-    details: "High fidelity creative composition focused on clean layout rhythm, volumetric shadows, and premium modern aesthetics."
-  }
-}
+  useEffect(() => {
+    const element = dialog.current
+    element?.showModal()
+    closeButton.current?.focus()
+    return () => { element?.close() }
+  }, [])
 
-function VideoCard({ item, label, onOpen }: { item: MotionItem; label: string; onOpen: () => void }) {
-  const ref = useRef<HTMLVideoElement>(null)
-  const [aspectRatio, setAspectRatio] = useState<string>('16 / 9')
-  const enter = () => { const v = ref.current; if (v) { v.currentTime = 0; v.play().catch(() => {}) } }
-  const leave = () => { const v = ref.current; if (v) { v.pause() } }
-  const setNativeAspect = () => {
-    const v = ref.current
-    if (!v?.videoWidth || !v.videoHeight) return
-    setAspectRatio(`${v.videoWidth} / ${v.videoHeight}`)
-  }
-
-  return (
-    <motion.article
-      className={`${g.card} ${g.videoCard}`}
-      style={{ aspectRatio }}
-      onMouseEnter={enter}
-      onMouseLeave={leave}
-      initial={{ opacity: 0, y: 26, filter: 'blur(8px)' }}
-      whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-      viewport={{ once: true, margin: '-60px' }}
-      transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-    >
-      <div className={g.badgeRow}>
-        <span className={g.badge}>{label}</span>
+  return <dialog ref={dialog} className={s.dialog} onCancel={onClose} onClick={event => { if (event.target === event.currentTarget) onClose() }} onKeyDown={event => {
+    if (event.key === 'ArrowLeft') { event.preventDefault(); onMove(-1) }
+    if (event.key === 'ArrowRight') { event.preventDefault(); onMove(1) }
+  }} aria-label={`${item.type === 'video' ? 'Motion' : 'Image'} preview: ${item.name}`}>
+    <div className={s.dialogInner}>
+      <div className={s.dialogTop}><span>{String(position + 1).padStart(2, '0')} / {String(count).padStart(2, '0')}</span><span>{item.name}</span><button ref={closeButton} onClick={onClose} aria-label="Close preview"><X size={23} /></button></div>
+      <div className={s.preview}>
+        {item.type === 'video' ? <video key={item.src} src={item.src} controls playsInline autoPlay /> : <img src={item.src} alt={item.name} />}
       </div>
-      <video
-        ref={ref}
-        src={item.src}
-        muted
-        loop
-        playsInline
-        preload="metadata"
-        controls
-        data-native-cursor="true"
-        onLoadedMetadata={setNativeAspect}
-      />
-      <button type="button" className={g.videoOpenButton} onClick={onOpen}>
-        <Play size={15} /> Open
-      </button>
-      <span className={`${g.overlay} ${g.videoOverlay}`}>
-        <span className={g.playDot}><Play size={18} /></span>
-        <span className={g.cardName}>{item.name || item.file}</span>
-      </span>
-    </motion.article>
-  )
-}
-
-function ImageCard({ item, label, onOpen }: { item: MotionItem; label: string; onOpen: () => void }) {
-  return (
-    <motion.button
-      className={g.card}
-      onClick={onOpen}
-      initial={{ opacity: 0, y: 26, filter: 'blur(8px)' }}
-      whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-      viewport={{ once: true, margin: '-60px' }}
-      transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-    >
-      <div className={g.badgeRow}>
-        <span className={g.badge}>{label}</span>
-      </div>
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src={item.src} alt={item.name || item.file} loading="lazy" />
-      <span className={g.overlay}>
-        <span className={g.playDot}><ImageIcon size={18} /></span>
-        <span className={g.cardName}>{item.name || item.file}</span>
-      </span>
-    </motion.button>
-  )
+      {count > 1 ? <div className={s.dialogNav}><button onClick={() => onMove(-1)}><ChevronLeft size={17} /> Previous</button><span>ARROW KEYS TO NAVIGATE · ESC TO CLOSE</span><button onClick={() => onMove(1)}>Next <ChevronRight size={17} /></button></div> : null}
+    </div>
+  </dialog>
 }
 
 export default function MotionGallery({ videos, images }: { videos: MotionItem[]; images: MotionItem[] }) {
-  const total = videos.length + images.length
-  const [section, setSection] = useState<MediaSection>('video')
-  
+  const [category, setCategory] = useState<'video' | 'image'>(videos.length ? 'video' : 'image')
   const [open, setOpen] = useState<number | null>(null)
+  const media = category === 'video' ? videos : images
 
-  const [isSlideshowRunning, setIsSlideshowRunning] = useState(false)
-  const [slideshowProgress, setSlideshowProgress] = useState(0)
-
-  const active = useMemo(() => (section === 'video' ? videos : images), [section, videos, images])
-  const hasMedia = total > 0
-
-  const close = useCallback(() => {
-    setOpen(null)
-    setIsSlideshowRunning(false)
-  }, [])
-
-  const go = useCallback((dir: number) => {
-    setOpen((cur) => {
-      if (cur === null) return null
-      const nextIdx = (cur + dir + active.length) % active.length
-      setSlideshowProgress(0)
-      return nextIdx
-    })
-  }, [active])
-
-  // Keyboard navigation
-  useEffect(() => {
-    if (open === null) return
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') close()
-      if (e.key === 'ArrowRight') go(1)
-      if (e.key === 'ArrowLeft') go(-1)
-    }
-    window.addEventListener('keydown', onKey)
-    document.body.style.overflow = 'hidden'
-    return () => { window.removeEventListener('keydown', onKey); document.body.style.overflow = '' }
-  }, [open, close, go])
-
-  // Autoplay Slideshow Effect loop
-  useEffect(() => {
-    let animationFrame: number | null = null
-    let startTimestamp: number | null = null
-    const duration = 8000 // 8s per slide
-
-    if (isSlideshowRunning && open !== null) {
-      const step = (timestamp: number) => {
-        if (!startTimestamp) startTimestamp = timestamp
-        const progress = Math.min((timestamp - startTimestamp) / duration, 1)
-        setSlideshowProgress(progress)
-
-        if (progress < 1) {
-          animationFrame = requestAnimationFrame(step)
-        } else {
-          go(1)
+  return <MotionConfig reducedMotion="user"><main className={s.page}>
+    <a href="/#work" className={s.back}><ArrowLeft size={15} /> Back to selected work</a>
+    <div className={s.eyebrow}><span>VISUAL PRODUCTION</span><span>EMIRHAN DOYGUN</span></div>
+    <header className={s.intro}><h1>Motion<br /><em>& imagery.</em></h1><div><p>Selected animation and visual work.</p><p>My production work includes animating prepared PSD designs, layer timing, parallax, and compositing.</p></div></header>
+    <div className={s.tabs} role="tablist" aria-label="Media category">
+      {(['video', 'image'] as const).map(type => <button key={type} id={`media-tab-${type}`} role="tab" aria-selected={category === type} aria-controls="media-panel" tabIndex={category === type ? 0 : -1} onClick={() => setCategory(type)} onKeyDown={event => {
+        if (['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) {
+          event.preventDefault()
+          const next = event.key === 'Home' ? 'video' : event.key === 'End' ? 'image' : type === 'video' ? 'image' : 'video'
+          setCategory(next)
+          document.getElementById(`media-tab-${next}`)?.focus()
         }
-      }
-      animationFrame = requestAnimationFrame(step)
-    } else {
-      setSlideshowProgress(0)
-    }
-
-    return () => {
-      if (animationFrame) cancelAnimationFrame(animationFrame)
-    }
-  }, [isSlideshowRunning, open, go])
-
-  const labelFor = (it: MotionItem, i: number) =>
-    `Example ${it.index >= Number.MAX_SAFE_INTEGER - 1000 ? i + 1 : it.index}`
-
-  // Spec Sheet information derived
-  const currentSpecs = useMemo(() => {
-    if (open === null || !active[open]) return null
-    return getSpecsForItem(active[open])
-  }, [open, active])
-
-  const handleOpenItem = (nextSection: MediaSection, idx: number) => {
-    setSection(nextSection)
-    setIsSlideshowRunning(false)
-    setOpen(idx)
-  }
-
-  const handleToggleSlideshow = () => {
-    const defaultSection = videos.length > 0 ? 'video' : 'image'
-    const defaultItems = defaultSection === 'video' ? videos : images
-
-    if (open === null && defaultItems.length > 0) {
-      setSection(defaultSection)
-      setOpen(0)
-    }
-    setIsSlideshowRunning(!isSlideshowRunning)
-  }
-
-  const renderEmpty = (type: MediaSection) => (
-    <section className={g.empty}>
-      <UploadCloud size={40} />
-      <h2>{type === 'video' ? 'No videos yet' : 'No images yet'}</h2>
-      <p>
-        Upload your {type === 'video' ? 'motion clips' : 'images'} to <code>public/motion/</code> named
-        <br />
-        <b>
-          {type === 'video'
-            ? 'Example_1.mp4, Example_2.mp4, Example_3.mp4 ...'
-            : 'Example_1.jpg, Example_2.png, Example_3.webp ...'}
-        </b>
-        <br />
-        They appear in this section automatically.
-      </p>
+      }}>{type === 'video' ? 'Motion' : 'Images'} <span>{String(type === 'video' ? videos.length : images.length).padStart(2, '0')}</span></button>)}
+      <span>SELECT A PROJECT TO VIEW</span>
+    </div>
+    <section id="media-panel" role="tabpanel" aria-labelledby={`media-tab-${category}`} tabIndex={0} className={s.grid}>
+      {media.map((item, index) => <motion.article key={item.src} initial={false} whileInView={{ opacity: 1 }} className={s.card}>
+        <button className={s.mediaButton} onClick={() => setOpen(index)} aria-label={`Open ${item.name}`}>
+          {item.type === 'video' ? <video src={`${item.src}#t=0.1`} preload="metadata" muted playsInline aria-hidden="true" /> : <img src={item.src} alt={item.name} loading="lazy" />}
+          <span className={s.index}>{String(index + 1).padStart(2, '0')}</span>
+          <span className={s.openIcon}>{item.type === 'video' ? <Play size={22} /> : <ImageIcon size={22} />}</span>
+        </button>
+        <div className={s.caption}><h2>{item.name}</h2><button onClick={() => setOpen(index)} aria-label={`View ${item.name}`}><ArrowUpRight size={19} /></button></div>
+        <p>{item.type === 'video' ? 'Motion design / Animation' : 'Visual design / Image study'}</p>
+      </motion.article>)}
+      {!media.length ? <p className={s.empty}>No {category === 'video' ? 'motion work' : 'images'} in this collection yet.</p> : null}
     </section>
-  )
-
-  return (
-    <main className={g.page}>
-      <header className={g.hero}>
-        <div className={g.pill}><Clapperboard size={14} /> METRAJ PRODUCTION SHOWCASE</div>
-        <h1 className={g.title}>Creative <span>Motion</span></h1>
-        <p className={g.lead}>
-          Animating ready-made PSD compositions, adding parallax depth, and crafting modern motion graphics.
-          Motion videos and static visuals are separated into their own sections for a cleaner portfolio flow.
-        </p>
-
-        <div className={g.headerActions}>
-          <div className={g.summaryStats} aria-label="Motion gallery summary">
-            <span><Film size={15} /> {videos.length} Motion Videos</span>
-            <span><ImageIcon size={15} /> {images.length} Static Designs</span>
-          </div>
-
-          <button className={g.slideshowHeaderBtn} onClick={handleToggleSlideshow}>
-            {isSlideshowRunning ? <PauseCircle size={16} /> : <PlayCircle size={16} />}
-            <span>{isSlideshowRunning ? 'PAUSE REEL' : 'PLAY CINE-REEL'}</span>
-          </button>
-        </div>
-      </header>
-
-      {hasMedia ? (
-        <>
-          <section className={g.mediaSection} aria-labelledby="motion-videos-title">
-            <div className={g.sectionHead}>
-              <div>
-                <span className={g.sectionEyebrow}><Film size={14} /> Motion Videos</span>
-                <h2 id="motion-videos-title">Animated motion reels</h2>
-              </div>
-              <span className={g.sectionCount}>{videos.length} items</span>
-            </div>
-
-            {videos.length > 0 ? (
-              <div className={g.grid}>
-                {videos.map((it, i) => (
-                  <VideoCard key={it.file} item={it} label={labelFor(it, i)} onOpen={() => handleOpenItem('video', i)} />
-                ))}
-              </div>
-            ) : renderEmpty('video')}
-          </section>
-
-          <section className={g.mediaSection} aria-labelledby="static-images-title">
-            <div className={g.sectionHead}>
-              <div>
-                <span className={g.sectionEyebrow}><ImageIcon size={14} /> Static Designs</span>
-                <h2 id="static-images-title">Image and design work</h2>
-              </div>
-              <span className={g.sectionCount}>{images.length} items</span>
-            </div>
-
-            {images.length > 0 ? (
-              <div className={g.grid}>
-                {images.map((it, i) => (
-                  <ImageCard key={it.file} item={it} label={labelFor(it, i)} onOpen={() => handleOpenItem('image', i)} />
-                ))}
-              </div>
-            ) : renderEmpty('image')}
-          </section>
-        </>
-      ) : (
-        <section className={g.empty}>
-          <UploadCloud size={40} />
-          <h2>No motion media yet</h2>
-          <p>
-            Upload videos and images to <code>public/motion/</code>.
-            <br />
-            Video and image files will appear in separate sections automatically.
-          </p>
-        </section>
-      )}
-
-      {/* Cinematic Showcase Lightbox Overlay */}
-      <AnimatePresence>
-        {open !== null && active[open] && (
-          <motion.div className={g.lightbox} onClick={close}
-            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-            
-            {/* Upper Floating Controls */}
-            <div className={g.topControlBar} onClick={e => e.stopPropagation()}>
-              {/* Autoplay Slideshow Status */}
-              <div className={g.slideshowStatusPill}>
-                <button className={g.btnPlaySlideshow} onClick={() => setIsSlideshowRunning(!isSlideshowRunning)}>
-                  {isSlideshowRunning ? <PauseCircle /> : <PlayCircle />}
-                </button>
-                <span>REEL AUTOPLAY</span>
-                {isSlideshowRunning && (
-                  <div className={g.progressTrackerLine}>
-                    <div className={g.progressFillLine} style={{ width: `${slideshowProgress * 100}%` }} />
-                  </div>
-                )}
-              </div>
-
-              <button className={g.close} onClick={close} aria-label="Close"><X /></button>
-            </div>
-
-            {/* Left Nav Button */}
-            {active.length > 1 && (
-              <button className={`${g.nav} ${g.prev}`} onClick={(e) => { e.stopPropagation(); go(-1) }} aria-label="Previous">
-                <ChevronLeft />
-              </button>
-            )}
-
-            {/* Main Stage Grid (Media Left, Specs Right) */}
-            <motion.div className={g.showcaseContainer} onClick={(e) => e.stopPropagation()}
-              key={open} initial={{ scale: 0.96, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ duration: 0.3 }}>
-              
-              {/* LEFT SIDE: Media Visual Player */}
-              <div className={g.visualPanel}>
-                
-                <div className={g.mediaStage}>
-                  <AnimatePresence mode="wait">
-                    {active[open].type === 'video' ? (
-                      <motion.video 
-                        key="video-media"
-                        src={active[open].src}
-                        controls 
-                        autoPlay 
-                        loop 
-                        playsInline
-                        data-native-cursor="true"
-                        className={g.stageMediaContent}
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        transition={{ duration: 0.25 }}
-                      />
-                    ) : (
-                      <motion.img 
-                        key="image-media"
-                        src={active[open].src}
-                        alt={active[open].name || active[open].file}
-                        className={g.stageMediaContent}
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        transition={{ duration: 0.25 }}
-                      />
-                    )}
-                  </AnimatePresence>
-                </div>
-              </div>
-
-              {/* RIGHT SIDE: Sophisticated Technical Specs Side Sheet */}
-              <div className={g.specSidebar}>
-                <div className={g.sidebarHeader}>
-                  <div className={g.specsPill}><Info size={12} /> TECHNICAL SHEETS</div>
-                  <h2>{currentSpecs?.title}</h2>
-                  <span className={g.specCategory}>{currentSpecs?.category}</span>
-                </div>
-
-                <div className={g.specsBlockContainer}>
-                  <div className={g.specParamRow}>
-                    <span>RESOLUTION</span>
-                    <b>{currentSpecs?.resolution}</b>
-                  </div>
-                  <div className={g.specParamRow}>
-                    <span>FRAMERATE</span>
-                    <b>{currentSpecs?.fps}</b>
-                  </div>
-                  <div className={g.specParamRow}>
-                    <span>PSD LAYERS</span>
-                    <b>{currentSpecs?.layers}</b>
-                  </div>
-                </div>
-
-                {/* Tools Used section */}
-                <div className={g.toolsContainer}>
-                  <h4>WORKFLOW STACK</h4>
-                  <div className={g.toolsTagsList}>
-                    {currentSpecs?.tools.map(tool => (
-                      <span key={tool} className={g.toolTag}>
-                        {tool}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Brief description detail */}
-                <div className={g.detailDescription}>
-                  <h4>PRODUCTION NOTES</h4>
-                  <p>{currentSpecs?.details}</p>
-                </div>
-
-                {/* Footer brand info */}
-                <div className={g.sidebarFooter}>
-                  <span>Metraj Production • Design enhancement template</span>
-                </div>
-              </div>
-
-            </motion.div>
-
-            {/* Right Nav Button */}
-            {active.length > 1 && (
-              <button className={`${g.nav} ${g.next}`} onClick={(e) => { e.stopPropagation(); go(1) }} aria-label="Next">
-                <ChevronRight />
-              </button>
-            )}
-
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </main>
-  )
+    <div className={s.end}><span>For projects & collaboration</span><a href="mailto:e_doygun@icloud.com">e_doygun@icloud.com <ArrowUpRight size={16} /></a></div>
+    {open !== null && media[open] ? <MediaDialog item={media[open]} position={open} count={media.length} onClose={() => setOpen(null)} onMove={direction => setOpen(value => value === null ? null : (value + direction + media.length) % media.length)} /> : null}
+  </main></MotionConfig>
 }

@@ -202,7 +202,7 @@ button:hover, a:hover { transform: translateY(-1px); }
 ::-webkit-scrollbar-track { background: #02050a; }
 ::-webkit-scrollbar-thumb { background: rgba(0, 234, 255, 0.35); border-radius: 999px; }
 
-/* ===== Enhanced FX layer ===== */
+
 @keyframes grainShift {
   0%,100% { transform: translate(0,0); }
   20% { transform: translate(-2%,1%); }
@@ -241,3 +241,12 @@ body::after {
 }
 
 .fx-tilt { will-change: transform; }
+
+:root { --font-space-grotesk: var(--font-display); }
+body { background: #141917; color: #eeeae2; }
+body::before, body::after { display: none; }
+html { scroll-padding-top: 110px; }
+::selection { background: #c5d697; color: #20251f; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+
+@media (max-width: 600px) { html { scroll-padding-top: 90px; } }

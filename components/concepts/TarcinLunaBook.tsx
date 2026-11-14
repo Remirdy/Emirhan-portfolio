@@ -53,12 +53,10 @@ function normalizeCategory(category: GalleryCategory): NormalizedGalleryCategory
   return {
     ...category,
     images: category.images
-      .map((page, index) => ({
-        ...page,
-        img: page.img ?? page.src,
-        glow: page.glow ?? GLOW_COLORS[index % GLOW_COLORS.length],
-      }))
-      .filter((page): page is GalleryPage => Boolean(page.img)),
+      .flatMap((page, index): GalleryPage[] => {
+        const img = page.img ?? page.src
+        return img ? [{ ...page, img, glow: page.glow ?? GLOW_COLORS[index % GLOW_COLORS.length] }] : []
+      }),
   }
 }
 
@@ -76,7 +74,6 @@ function PageFlipper({ flip, pages, onDone }: { flip: FlipState; pages: GalleryP
     })
     anim.then(() => { if (alive) onDone() })
     return () => { alive = false; anim.stop() }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const frontPage = pages[flip.dir === 'next' ? flip.from : flip.to]
@@ -87,12 +84,12 @@ function PageFlipper({ flip, pages, onDone }: { flip: FlipState; pages: GalleryP
       className={s.leaf}
       style={{ rotateY: rotY, transformStyle: 'preserve-3d' }}
     >
-      {/* Front face */}
+
       <div className={s.leafFront}>
         <img src={frontPage.img} alt="" className={s.pageImg} draggable={false} />
         <motion.div className={s.leafShadow} style={{ opacity: shadowOp }} />
       </div>
-      {/* Back face */}
+
       <div className={s.leafBack}>
         <img src={backPage.img} alt="" className={s.pageImg} draggable={false} />
         <motion.div className={s.leafShadow} style={{ opacity: shadowOp }} />
@@ -158,30 +155,30 @@ export default function TarcinLunaBook() {
 
   return (
     <div className={s.wrap}>
-      {/* Ambient glow that matches the current page */}
+
       <div
         className={s.glow}
         style={{ background: `radial-gradient(ellipse at 50% 65%, ${currentPage.glow}55 0%, transparent 68%)` }}
       />
 
-      {/* Drop shadow under the book */}
+
       <div className={s.bookShadow} />
 
-      {/* ── Book ─────────────────────────────────── */}
+
       <div className={s.book}>
-        {/* Already-read pages stack (left of spine) */}
+
         <div className={s.leftStack} aria-hidden>
           {Array.from({ length: Math.min(readCount, 7) }).map((_, i) => (
             <div key={i} className={s.stackSlice} style={{ opacity: 0.9 - i * 0.1 }} />
           ))}
         </div>
 
-        {/* Spine */}
+
         <div className={s.spine} />
 
-        {/* Page area */}
+
         <div className={s.pageArea}>
-          {/* Background image (target/current) */}
+
           <img
             key={`bg-${bgPage}`}
             src={pages[bgPage].img}
@@ -190,7 +187,7 @@ export default function TarcinLunaBook() {
             draggable={false}
           />
 
-          {/* Animated flip leaf */}
+
           {flip && (
             <PageFlipper
               key={`flip-${flip.from}-${flip.to}`}
@@ -200,22 +197,22 @@ export default function TarcinLunaBook() {
             />
           )}
 
-          {/* Caption overlay */}
+
           <div className={s.caption}>
             <strong>{currentPage.title}</strong>
             <span>{activeCategory.title} / {currentPage.sub}</span>
           </div>
 
-          {/* Page number */}
+
           <div className={s.pageNum}>{current + 1}<em>/{pages.length}</em></div>
 
-          {/* Corner curl hint */}
+
           {!flip && current < pages.length - 1 && (
             <button className={s.curlHint} onClick={() => go('next')} aria-label="Next page" />
           )}
         </div>
 
-        {/* Remaining pages stack (right of page area) */}
+
         <div className={s.rightStack} aria-hidden>
           {Array.from({ length: Math.min(remainingCount, 7) }).map((_, i) => (
             <div key={i} className={s.stackSlice} style={{ opacity: 0.9 - i * 0.1 }} />
@@ -243,7 +240,7 @@ export default function TarcinLunaBook() {
         </div>
       )}
 
-      {/* ── Navigation ───────────────────────────── */}
+
       <div className={s.nav}>
         <button
           className={s.navBtn}
@@ -281,7 +278,7 @@ export default function TarcinLunaBook() {
         </button>
       </div>
 
-      {/* Decorative sparkles */}
+
       <div className={s.sparkles} aria-hidden>
         {Array.from({ length: 10 }).map((_, i) => (
           <i key={i} className={s.spark} style={{ '--si': i } as React.CSSProperties} />
