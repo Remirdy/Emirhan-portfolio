@@ -40,7 +40,7 @@ function Screen({ image, width, height, position }: { image: string; width: numb
 export function InteriorModel() {
   const { scene } = useGLTF('/studies/quiet-corner.glb')
   const model = useMemo(() => scene.clone(true), [scene])
-  return <Center bottom><primitive object={model} /></Center>
+  return <Center><primitive object={model} /></Center>
 }
 
 function Desk({ onSelect, category, reset }: SceneProps) {
