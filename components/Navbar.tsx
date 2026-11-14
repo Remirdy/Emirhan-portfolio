@@ -2,13 +2,14 @@
 
 import { useEffect, useState } from 'react'
 import { usePathname } from 'next/navigation'
+import Link from 'next/link'
 import { ArrowUpRight, Menu, X } from 'lucide-react'
 import s from './portfolio/Shell.module.css'
 
 const links = [
   { href: '/#work', label: 'Selected work' },
   { href: '/#about', label: 'About' },
-  { href: '/play', label: 'Playground' },
+  { href: 'https://github.com/Remirdy', label: 'GitHub' },
 ]
 
 export default function Navbar() {
@@ -26,17 +27,17 @@ export default function Navbar() {
   return (
     <header className={`${s.header} ${pathname === '/' ? s.home : ''}`}>
       <div className={s.navInner}>
-        <a href="/" className={s.brand} aria-label="Emirhan Doygun, home" onClick={() => setOpen(false)}>ed<span>.</span></a>
+        <Link href="/" className={s.brand} aria-label="Emirhan Doygun, home" onClick={() => setOpen(false)}>ed<span>.</span></Link>
         <span className={s.identity}>EMIRHAN DOYGUN<br /><span>SOFTWARE DEVELOPER</span></span>
         <nav className={s.desktopNav} aria-label="Main navigation">
-          {links.map(link => <a href={link.href} key={link.href}>{link.label}</a>)}
+          {links.map(link => <Link href={link.href} key={link.href}>{link.label}</Link>)}
         </nav>
-        <a href="/#contact" className={s.contactLink}>Let’s talk <ArrowUpRight size={17} /></a>
+        <Link href="/#contact" className={s.contactLink}>Contact <ArrowUpRight size={17} /></Link>
         <button className={s.menuButton} onClick={() => setOpen(value => !value)} aria-expanded={open} aria-controls="mobile-navigation" aria-label={open ? 'Close menu' : 'Open menu'}>{open ? <X /> : <Menu />}</button>
       </div>
       {open ? <nav id="mobile-navigation" className={s.mobileNav} aria-label="Mobile navigation">
-        {links.map(link => <a href={link.href} key={link.href} onClick={() => setOpen(false)}>{link.label}<ArrowUpRight /></a>)}
-        <a href="/#contact" onClick={() => setOpen(false)}>Let’s talk<ArrowUpRight /></a>
+        {links.map(link => <Link href={link.href} key={link.href} onClick={() => setOpen(false)}>{link.label}<ArrowUpRight /></Link>)}
+        <Link href="/#contact" onClick={() => setOpen(false)}>Contact<ArrowUpRight /></Link>
       </nav> : null}
     </header>
   )

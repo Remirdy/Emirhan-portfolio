@@ -12,8 +12,8 @@ const serif = localFont({ src: [
 ], variable: '--font-serif', display: 'swap' })
 
 export const metadata: Metadata = {
-  title: 'Emirhan Doygun — Games, Motion & Creative Tools',
-  description: 'I’m Emirhan, a developer and Computer Engineering student in Istanbul. Explore my Unity games, motion work, creative tools and experiments.',
+  title: 'Emirhan Doygun — Software Developer',
+  description: 'Software developer and Computer Engineering student in Istanbul. Mobile games, development tools, systems programming, 3D and motion design.',
   icons: {
     icon: '/favicon.ico',
   },
